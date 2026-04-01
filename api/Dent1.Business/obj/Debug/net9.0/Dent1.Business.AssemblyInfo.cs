@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Dent1.Business")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+10d847b395ff09b99a32460a175126a615a63a07")]
 [assembly: System.Reflection.AssemblyProductAttribute("Dent1.Business")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Dent1.Business")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,0 +1,87 @@
+<section class="login-shell">
+  <div class="glow glow-left"></div>
+  <div class="glow glow-right"></div>
+
+  <p-card styleClass="login-card">
+    <ng-template #title>
+      <div class="title-wrap">
+        <p class="eyebrow">Dent1 Portal</p>
+        <h1>Welcome Back</h1>
+      </div>
+    </ng-template>
+
+    <ng-template #subtitle>
+      <p>Choose Google sign-in or continue with phone OTP.</p>
+    </ng-template>
+
+    <div class="section-block">
+      <button
+        pButton
+        type="button"
+        label="Login with Google"
+        icon="pi pi-google"
+        class="google-btn"
+        (click)="loginWithGoogleHandle()"
+      ></button>
+    </div>
+
+    <p-divider align="center" type="solid">
+      <span>or</span>
+    </p-divider>
+
+    <form class="otp-form" [formGroup]="phoneForm" novalidate>
+      <label for="phoneNumber">Phone Number</label>
+      <div class="phone-row">
+        <p-select
+          inputId="countryCode"
+          formControlName="countryCode"
+          [options]="countryCodeOptions"
+          optionLabel="label"
+          optionValue="value"
+          class="country-code-select"
+        ></p-select>
+
+        <input
+          pInputText
+          id="phoneNumber"
+          type="tel"
+          formControlName="phoneNumber"
+          placeholder="Enter 10-digit mobile number"
+          maxlength="10"
+          (input)="onPhoneInput($event)"
+        />
+      </div>
+
+      <div id="recaptcha-container"></div>
+
+      @if (otpStatus()) {
+        <small class="status-text">{{ otpStatus() }}</small>
+      }
+
+      <button
+        pButton
+        type="button"
+        label="Send OTP"
+        icon="pi pi-send"
+        [disabled]="!canSendOtp()"
+        (click)="sendOtp()"
+      ></button>
+
+      @if (otpSent()) {
+        <div class="otp-box">
+          <label for="otp">Enter OTP</label>
+          <p-inputotp id="otp" formControlName="otp" [integerOnly]="true" [length]="6" />
+
+          <button
+            pButton
+            type="button"
+            label="Verify OTP & Login"
+            icon="pi pi-check"
+            [disabled]="!canVerifyOtp()"
+            (click)="verifyOtpAndLogin()"
+          ></button>
+        </div>
+      }
+    </form>
+  </p-card>
+</section>

@@ -1,0 +1,17 @@
+<section class="home-shell">
+  <p-card styleClass="home-card">
+    <ng-template #title>
+      <h1>Home Page</h1>
+    </ng-template>
+
+    <p>You are now on the home screen after login.</p>
+
+    <button
+      pButton
+      type="button"
+      icon="pi pi-arrow-left"
+      label="Back to Login"
+      (click)="goToLogin()"
+    ></button>
+  </p-card>
+</section>

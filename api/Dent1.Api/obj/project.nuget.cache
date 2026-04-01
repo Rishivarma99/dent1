@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "OHCfnltYwMY=",
+  "dgSpecHash": "2Z/sXhUlnbg=",
   "success": true,
-  "projectFilePath": "C:\\Users\\rishi.alluri\\OneDrive - Paltech Consulting Private Limited\\Documents\\GitHub\\dent1\\api\\Dent1.Api\\Dent1.Api.csproj",
+  "projectFilePath": "C:\\Users\\rishi.alluri\\OneDrive - Paltech Consulting Private Limited\\Documents\\Projects\\dent1\\api\\Dent1.Api\\Dent1.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\rishi.alluri\\.nuget\\packages\\fluentvalidation\\12.1.1\\fluentvalidation.12.1.1.nupkg.sha512",
     "C:\\Users\\rishi.alluri\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\12.1.1\\fluentvalidation.dependencyinjectionextensions.12.1.1.nupkg.sha512",
@@ -55,7 +55,11 @@
     "C:\\Users\\rishi.alluri\\.nuget\\packages\\system.reflection.metadata\\7.0.0\\system.reflection.metadata.7.0.0.nupkg.sha512",
     "C:\\Users\\rishi.alluri\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
     "C:\\Users\\rishi.alluri\\.nuget\\packages\\system.text.json\\9.0.14\\system.text.json.9.0.14.nupkg.sha512",
-    "C:\\Users\\rishi.alluri\\.nuget\\packages\\system.threading.channels\\7.0.0\\system.threading.channels.7.0.0.nupkg.sha512"
+    "C:\\Users\\rishi.alluri\\.nuget\\packages\\system.threading.channels\\7.0.0\\system.threading.channels.7.0.0.nupkg.sha512",
+    "C:\\Users\\rishi.alluri\\.nuget\\packages\\microsoft.netcore.app.ref\\9.0.14\\microsoft.netcore.app.ref.9.0.14.nupkg.sha512",
+    "C:\\Users\\rishi.alluri\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\9.0.14\\microsoft.windowsdesktop.app.ref.9.0.14.nupkg.sha512",
+    "C:\\Users\\rishi.alluri\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\9.0.14\\microsoft.aspnetcore.app.ref.9.0.14.nupkg.sha512",
+    "C:\\Users\\rishi.alluri\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\9.0.14\\microsoft.netcore.app.host.win-x64.9.0.14.nupkg.sha512"
   ],
   "logs": []
 }

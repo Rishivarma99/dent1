@@ -3417,39 +3417,32 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\rishi.alluri\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\rishi.alluri\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\rishi.alluri\\OneDrive - Paltech Consulting Private Limited\\Documents\\GitHub\\dent1\\api\\Dent1.Api\\Dent1.Api.csproj",
+      "projectUniqueName": "C:\\Users\\rishi.alluri\\OneDrive - Paltech Consulting Private Limited\\Documents\\Projects\\dent1\\api\\Dent1.Api\\Dent1.Api.csproj",
       "projectName": "Dent1.Api",
-      "projectPath": "C:\\Users\\rishi.alluri\\OneDrive - Paltech Consulting Private Limited\\Documents\\GitHub\\dent1\\api\\Dent1.Api\\Dent1.Api.csproj",
+      "projectPath": "C:\\Users\\rishi.alluri\\OneDrive - Paltech Consulting Private Limited\\Documents\\Projects\\dent1\\api\\Dent1.Api\\Dent1.Api.csproj",
       "packagesPath": "C:\\Users\\rishi.alluri\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\rishi.alluri\\OneDrive - Paltech Consulting Private Limited\\Documents\\GitHub\\dent1\\api\\Dent1.Api\\obj\\",
+      "outputPath": "C:\\Users\\rishi.alluri\\OneDrive - Paltech Consulting Private Limited\\Documents\\Projects\\dent1\\api\\Dent1.Api\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\rishi.alluri\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\rishi.alluri\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "C:\\Users\\rishi.alluri\\OneDrive - Paltech Consulting Private Limited\\Documents\\GitHub\\dent1\\api\\Dent1.Business\\Dent1.Business.csproj": {
-              "projectPath": "C:\\Users\\rishi.alluri\\OneDrive - Paltech Consulting Private Limited\\Documents\\GitHub\\dent1\\api\\Dent1.Business\\Dent1.Business.csproj"
+            "C:\\Users\\rishi.alluri\\OneDrive - Paltech Consulting Private Limited\\Documents\\Projects\\dent1\\api\\Dent1.Business\\Dent1.Business.csproj": {
+              "projectPath": "C:\\Users\\rishi.alluri\\OneDrive - Paltech Consulting Private Limited\\Documents\\Projects\\dent1\\api\\Dent1.Business\\Dent1.Business.csproj"
             }
           }
         }
@@ -3464,7 +3457,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.300"
+      "SdkAnalysisLevel": "10.0.200"
     },
     "frameworks": {
       "net9.0": {
@@ -3496,6 +3489,24 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[9.0.14, 9.0.14]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.win-x64",
+            "version": "[9.0.14, 9.0.14]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[9.0.14, 9.0.14]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Ref",
+            "version": "[9.0.14, 9.0.14]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.AspNetCore.App": {
             "privateAssets": "none"
@@ -3504,7 +3515,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
