@@ -1,3 +1,5 @@
+using Dent1.Common.Errors;
+using Dent1.Common.Exceptions;
 using FluentValidation;
 using MediatR;
 
@@ -43,7 +45,16 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
             .ToList();
 
         if (failures.Count > 0)
-            throw new ValidationException(failures);
+        {
+            var details = string.Join("; ", failures.Select(x => x.ErrorMessage));
+
+            throw new AppException(
+                Errors.Common.ValidationFailed,
+                new Dictionary<string, object>
+                {
+                    ["Details"] = details
+                });
+        }
 
         return await next();
     }

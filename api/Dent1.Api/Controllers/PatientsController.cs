@@ -1,6 +1,8 @@
 using Dent1.Business.Commands;
 using Dent1.Business.DTOs;
 using Dent1.Business.Queries;
+using Dent1.Common.Errors;
+using Dent1.Common.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,7 +50,14 @@ public class PatientsController : ControllerBase
     public async Task<ActionResult<PatientDto>> GetById(Guid id)
     {
         var patient = await _mediator.Send(new GetPatientByIdQuery(id));
-        if (patient is null) return NotFound();
+        if (patient is null)
+        {
+            throw new AppException(Errors.Patient.NotFound, new Dictionary<string, object>
+            {
+                ["PatientId"] = id
+            });
+        }
+
         return Ok(patient);
     }
 
@@ -58,6 +67,11 @@ public class PatientsController : ControllerBase
     [HttpGet("search")]
     public async Task<ActionResult<List<PatientDto>>> SearchByPhone([FromQuery] string phone)
     {
+        if (string.IsNullOrWhiteSpace(phone))
+        {
+            throw new AppException(Errors.Patient.InvalidSearchPhone);
+        }
+
         var patients = await _mediator.Send(new SearchPatientsByPhoneQuery(phone));
         return Ok(patients);
     }

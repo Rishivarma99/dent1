@@ -1,5 +1,5 @@
 using Dent1.Business.Behaviors;
-using Dent1.Data.Interfaces;
+using Dent1.Business.Services;
 using MediatR;
 
 namespace Dent1.Business.Commands;
@@ -31,19 +31,15 @@ public class CreatePatientCommand : IRequest<Guid>, ITransactionalCommand
 
 public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand, Guid>
 {
-    private readonly IPatientRepository _patientRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IPatientService _patientService;
 
-    public CreatePatientCommandHandler(IPatientRepository patientRepository, IUnitOfWork unitOfWork)
+    public CreatePatientCommandHandler(IPatientService patientService)
     {
-        _patientRepository = patientRepository;
-        _unitOfWork = unitOfWork;
+        _patientService = patientService;
     }
 
     public async Task<Guid> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
     {
-        var id = await _patientRepository.AddAsync(request.Name, request.Phone, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return id;
+        return await _patientService.CreatePatientAsync(request.Name, request.Phone, cancellationToken);
     }
 }

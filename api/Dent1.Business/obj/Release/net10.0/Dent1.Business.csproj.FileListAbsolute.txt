@@ -1,0 +1,16 @@
+C:\Users\rishi.alluri\OneDrive - Paltech Consulting Private Limited\Documents\Projects\dent1\api\Dent1.Business\bin\Release\net10.0\Dent1.Business.deps.json
+C:\Users\rishi.alluri\OneDrive - Paltech Consulting Private Limited\Documents\Projects\dent1\api\Dent1.Business\bin\Release\net10.0\Dent1.Business.dll
+C:\Users\rishi.alluri\OneDrive - Paltech Consulting Private Limited\Documents\Projects\dent1\api\Dent1.Business\bin\Release\net10.0\Dent1.Business.pdb
+C:\Users\rishi.alluri\OneDrive - Paltech Consulting Private Limited\Documents\Projects\dent1\api\Dent1.Business\bin\Release\net10.0\Dent1.Data.dll
+C:\Users\rishi.alluri\OneDrive - Paltech Consulting Private Limited\Documents\Projects\dent1\api\Dent1.Business\bin\Release\net10.0\Dent1.Data.pdb
+C:\Users\rishi.alluri\OneDrive - Paltech Consulting Private Limited\Documents\Projects\dent1\api\Dent1.Business\obj\Release\net10.0\Dent1.Business.csproj.AssemblyReference.cache
+C:\Users\rishi.alluri\OneDrive - Paltech Consulting Private Limited\Documents\Projects\dent1\api\Dent1.Business\obj\Release\net10.0\Dent1.Business.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\rishi.alluri\OneDrive - Paltech Consulting Private Limited\Documents\Projects\dent1\api\Dent1.Business\obj\Release\net10.0\Dent1.Business.AssemblyInfoInputs.cache
+C:\Users\rishi.alluri\OneDrive - Paltech Consulting Private Limited\Documents\Projects\dent1\api\Dent1.Business\obj\Release\net10.0\Dent1.Business.AssemblyInfo.cs
+C:\Users\rishi.alluri\OneDrive - Paltech Consulting Private Limited\Documents\Projects\dent1\api\Dent1.Business\obj\Release\net10.0\Dent1.Business.csproj.CoreCompileInputs.cache
+C:\Users\rishi.alluri\OneDrive - Paltech Consulting Private Limited\Documents\Projects\dent1\api\Dent1.Business\obj\Release\net10.0\Dent1.Business.sourcelink.json
+C:\Users\rishi.alluri\OneDrive - Paltech Consulting Private Limited\Documents\Projects\dent1\api\Dent1.Business\obj\Release\net10.0\Dent1.Bu.977ADDED.Up2Date
+C:\Users\rishi.alluri\OneDrive - Paltech Consulting Private Limited\Documents\Projects\dent1\api\Dent1.Business\obj\Release\net10.0\Dent1.Business.dll
+C:\Users\rishi.alluri\OneDrive - Paltech Consulting Private Limited\Documents\Projects\dent1\api\Dent1.Business\obj\Release\net10.0\refint\Dent1.Business.dll
+C:\Users\rishi.alluri\OneDrive - Paltech Consulting Private Limited\Documents\Projects\dent1\api\Dent1.Business\obj\Release\net10.0\Dent1.Business.pdb
+C:\Users\rishi.alluri\OneDrive - Paltech Consulting Private Limited\Documents\Projects\dent1\api\Dent1.Business\obj\Release\net10.0\ref\Dent1.Business.dll

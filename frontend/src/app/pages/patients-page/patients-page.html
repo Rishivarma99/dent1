@@ -1,0 +1,51 @@
+<p-toast></p-toast>
+
+<section class="page-shell">
+  <p-toolbar styleClass="toolbar">
+    <ng-template #start>
+      <h2>Patients</h2>
+    </ng-template>
+    <ng-template #end>
+      <button pButton type="button" icon="pi pi-home" label="Home" (click)="goHome()"></button>
+      <button pButton type="button" icon="pi pi-plus" label="Add Patient" (click)="openNew()"></button>
+    </ng-template>
+  </p-toolbar>
+
+  <div class="search-row">
+    <input pInputText placeholder="Search by phone" #phoneSearch (input)="onSearch(phoneSearch.value)" />
+    <button pButton type="button" icon="pi pi-search" label="Search API" (click)="searchServer()"></button>
+    <button pButton type="button" severity="secondary" label="Reset" (click)="onSearch(''); loadPatients()"></button>
+  </div>
+
+  <p-table [value]="visiblePatients()" [loading]="loading()" [paginator]="true" [rows]="8" responsiveLayout="scroll">
+    <ng-template #header>
+      <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Created At</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-patient>
+      <tr>
+        <td>{{ patient.name }}</td>
+        <td>{{ patient.phone }}</td>
+        <td>{{ patient.createdAt | date: 'medium' }}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-dialog header="New Patient" [modal]="true" [(visible)]="dialogVisible" [style]="{ width: '28rem' }">
+    <form class="patient-form" [formGroup]="form" (ngSubmit)="createPatient()">
+      <label for="patient-name">Name</label>
+      <input id="patient-name" pInputText formControlName="name" />
+
+      <label for="patient-phone">Phone</label>
+      <input id="patient-phone" pInputText formControlName="phone" />
+
+      <div class="dialog-actions">
+        <button pButton type="button" label="Cancel" severity="secondary" (click)="dialogVisible.set(false)"></button>
+        <button pButton type="submit" label="Save" [disabled]="form.invalid"></button>
+      </div>
+    </form>
+  </p-dialog>
+</section>

@@ -1,4 +1,5 @@
 using Dent1.Data.Entities;
+using Dent1.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Dent1.Data;
@@ -9,6 +10,7 @@ public class DentContext : DbContext
 
     public DbSet<Patient> Patients => Set<Patient>();
     public DbSet<Doctor> Doctors => Set<Doctor>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,6 +26,27 @@ public class DentContext : DbContext
             entity.HasKey(d => d.Id);
             entity.Property(d => d.Name).IsRequired().HasMaxLength(200);
             entity.Property(d => d.Specialty).IsRequired().HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(u => u.Id);
+            entity.Property(u => u.Name).IsRequired().HasMaxLength(200);
+            entity.Property(u => u.Email).IsRequired().HasMaxLength(200);
+            entity.Property(u => u.Username).IsRequired().HasMaxLength(100);
+            entity.Property(u => u.PhoneNumber).IsRequired().HasMaxLength(20);
+            entity.Property(u => u.PasswordHash).IsRequired().HasMaxLength(300);
+            entity.Property(u => u.RefreshTokenHash).HasMaxLength(300);
+            entity.Property(u => u.RefreshTokenExpiresAt);
+            entity.Property(u => u.RefreshTokenCreatedAt);
+            entity.HasIndex(u => u.Email).IsUnique();
+            entity.HasIndex(u => u.Username).IsUnique();
+            entity.HasIndex(u => u.PhoneNumber).IsUnique();
+            entity.Property(u => u.Role).HasConversion<string>().HasMaxLength(30);
+            entity.Property(u => u.IsActive).IsRequired();
+            entity.Property(u => u.IsDeleted).IsRequired();
+            entity.Property(u => u.CreatedAt).IsRequired();
+            entity.HasQueryFilter(u => !u.IsDeleted);
         });
 
         // Seed 10 patients with some duplicate phone numbers for testing SearchByPhone

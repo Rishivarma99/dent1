@@ -14,6 +14,7 @@ public static class DataBootstrapper
 
         services.AddScoped<IPatientRepository, PatientRepository>();
         services.AddScoped<IDoctorRepository, DoctorRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
 }

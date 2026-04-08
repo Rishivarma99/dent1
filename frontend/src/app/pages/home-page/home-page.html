@@ -6,12 +6,32 @@
 
     <p>You are now on the home screen after login.</p>
 
-    <button
-      pButton
-      type="button"
-      icon="pi pi-arrow-left"
-      label="Back to Login"
-      (click)="goToLogin()"
-    ></button>
+    <div class="home-actions">
+      <button
+        pButton
+        type="button"
+        icon="pi pi-user-md"
+        label="Manage Doctors"
+        (click)="goToDoctors()"
+      ></button>
+
+      <button
+        pButton
+        type="button"
+        icon="pi pi-users"
+        severity="secondary"
+        label="Manage Patients"
+        (click)="goToPatients()"
+      ></button>
+
+      <button
+        pButton
+        type="button"
+        icon="pi pi-arrow-left"
+        severity="contrast"
+        label="Back to Login"
+        (click)="goToLogin()"
+      ></button>
+    </div>
   </p-card>
 </section>

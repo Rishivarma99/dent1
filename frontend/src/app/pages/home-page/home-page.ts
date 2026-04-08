@@ -16,4 +16,12 @@ export class HomePage {
   protected goToLogin(): void {
     void this.router.navigate(['/login']);
   }
+
+  protected goToDoctors(): void {
+    void this.router.navigate(['/doctors']);
+  }
+
+  protected goToPatients(): void {
+    void this.router.navigate(['/patients']);
+  }
 }

@@ -6,6 +6,10 @@ using Dent1.Business.Cqrs;
 using Dent1.Business.Commands;
 using Dent1.Business.DTOs;
 using Dent1.Business.Queries;
+using Dent1.Business.Security;
+using Dent1.Business.Services;
+using Dent1.Data.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace Dent1.Business;
 
@@ -28,7 +32,11 @@ public static class BusinessBootstrapper
         // ValidationBehavior picks them up via IEnumerable<IValidator<TRequest>>.
         services.AddValidatorsFromAssembly(typeof(BusinessBootstrapper).Assembly);
 
-        // Explicit CQRS registrations for Doctors module (no MediatR).
+        services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
+        services.AddSingleton<IPasswordService, PasswordService>();
+        services.AddScoped<IPatientService, PatientService>();
+
+        // Explicit CQRS registrations for Doctors module only (no MediatR).
         services.AddScoped<ICommandHandler<CreateDoctorCommand, Guid>, CreateDoctorCommandHandler>();
         services.AddScoped<IQueryHandler<GetAllDoctorsQuery, List<DoctorDto>>, GetAllDoctorsQueryHandler>();
         services.AddScoped<IQueryHandler<GetDoctorByIdQuery, DoctorDto?>, GetDoctorByIdQueryHandler>();
