@@ -1,55 +1,44 @@
-using Dent1.Business.Commands;
 using Dent1.Business.DTOs;
-using Dent1.Business.Queries;
 using Dent1.Common.Errors;
 using Dent1.Common.Exceptions;
-using MediatR;
+using Dent1.Data.Entities;
+using Dent1.Data.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dent1.Api.Controllers;
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// CQRS CONTROLLER
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// The controller has ZERO business logic.
-// It only does two things:
-//   1. Creates a Command or Query object
-//   2. Sends it through MediatR
-// MediatR routes it to the correct Handler automatically.
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 [ApiController]
 [Route("api/[controller]")]
 public class PatientsController : ControllerBase
 {
-    private readonly IMediator _mediator;
+    private readonly IPatientRepository _patientRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public PatientsController(IMediator mediator)
+    public PatientsController(IPatientRepository patientRepository, IUnitOfWork unitOfWork)
     {
-        _mediator = mediator;
+        _patientRepository = patientRepository;
+        _unitOfWork = unitOfWork;
     }
 
-    // ── COMMAND: Create Patient (Write Side) ─────────────────
     [HttpPost]
-    public async Task<ActionResult<Guid>> Create(CreatePatientCommand command)
+    public async Task<ActionResult<Guid>> Create(CreatePatientRequest request, CancellationToken cancellationToken)
     {
-        var id = await _mediator.Send(command);
+        var id = await _patientRepository.AddAsync(request.Name, request.Phone, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id }, id);
     }
 
-    // ── QUERY: Get All Patients (Read Side) ──────────────────
     [HttpGet]
-    public async Task<ActionResult<List<PatientDto>>> GetAll()
+    public async Task<ActionResult<List<PatientDto>>> GetAll(CancellationToken cancellationToken)
     {
-        var patients = await _mediator.Send(new GetAllPatientsQuery());
-        return Ok(patients);
+        var patients = await _patientRepository.GetAllAsync(cancellationToken);
+        return Ok(patients.Select(MapToDto).ToList());
     }
 
-    // ── QUERY: Get Patient By Id (Read Side) ─────────────────
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<PatientDto>> GetById(Guid id)
+    public async Task<ActionResult<PatientDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var patient = await _mediator.Send(new GetPatientByIdQuery(id));
+        var patient = await _patientRepository.GetByIdAsync(id, cancellationToken);
         if (patient is null)
         {
             throw new AppException(Errors.Patient.NotFound, new Dictionary<string, object>
@@ -58,21 +47,35 @@ public class PatientsController : ControllerBase
             });
         }
 
-        return Ok(patient);
+        return Ok(MapToDto(patient));
     }
 
-    // ── QUERY: Search by Phone (Read Side) ───────────────────
-    // Supports PRD's duplicate detection: "Phone is NOT unique.
-    // System suggests duplicates based on phone."
     [HttpGet("search")]
-    public async Task<ActionResult<List<PatientDto>>> SearchByPhone([FromQuery] string phone)
+    public async Task<ActionResult<List<PatientDto>>> SearchByPhone([FromQuery] string phone, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(phone))
         {
             throw new AppException(Errors.Patient.InvalidSearchPhone);
         }
 
-        var patients = await _mediator.Send(new SearchPatientsByPhoneQuery(phone));
-        return Ok(patients);
+        var patients = await _patientRepository.SearchByPhoneAsync(phone, cancellationToken);
+        return Ok(patients.Select(MapToDto).ToList());
+    }
+
+    private static PatientDto MapToDto(Patient patient)
+    {
+        return new PatientDto
+        {
+            Id = patient.Id,
+            Name = patient.Name,
+            Phone = patient.Phone,
+            CreatedAt = patient.CreatedAt
+        };
+    }
+
+    public sealed class CreatePatientRequest
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
     }
 }

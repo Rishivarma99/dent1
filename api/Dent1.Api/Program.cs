@@ -43,12 +43,11 @@ builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserSeedService, UserSeedService>();
 
-// ── CQRS Bootstrappers ──────────────────────────────────
 // DataBootstrapper: registers DbContext with PostgreSQL
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
 DataBootstrapper.Register(builder.Services, connectionString);
 
-// BusinessBootstrapper: registers MediatR (auto-discovers all Command & Query handlers)
+// BusinessBootstrapper: registers business services
 BusinessBootstrapper.Register(builder.Services);
 
 builder.Services.AddCors(options =>

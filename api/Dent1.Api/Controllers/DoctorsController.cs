@@ -1,7 +1,6 @@
-using Dent1.Business.Cqrs;
-using Dent1.Business.Commands;
 using Dent1.Business.DTOs;
-using Dent1.Business.Queries;
+using Dent1.Data.Entities;
+using Dent1.Data.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dent1.Api.Controllers;
@@ -10,77 +9,92 @@ namespace Dent1.Api.Controllers;
 [Route("api/[controller]")]
 public class DoctorsController : ControllerBase
 {
-    private readonly ICommandHandler<CreateDoctorCommand, Guid> _createHandler;
-    private readonly IQueryHandler<GetAllDoctorsQuery, List<DoctorDto>> _getAllHandler;
-    private readonly IQueryHandler<GetDoctorByIdQuery, DoctorDto?> _getByIdHandler;
-    private readonly ICommandHandler<UpdateDoctorCommand, bool> _updateHandler;
-    private readonly ICommandHandler<DeleteDoctorCommand, bool> _deleteHandler;
+    private readonly IDoctorRepository _doctorRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
     public DoctorsController(
-        ICommandHandler<CreateDoctorCommand, Guid> createHandler,
-        IQueryHandler<GetAllDoctorsQuery, List<DoctorDto>> getAllHandler,
-        IQueryHandler<GetDoctorByIdQuery, DoctorDto?> getByIdHandler,
-        ICommandHandler<UpdateDoctorCommand, bool> updateHandler,
-        ICommandHandler<DeleteDoctorCommand, bool> deleteHandler)
+        IDoctorRepository doctorRepository,
+        IUnitOfWork unitOfWork)
     {
-        _createHandler = createHandler;
-        _getAllHandler = getAllHandler;
-        _getByIdHandler = getByIdHandler;
-        _updateHandler = updateHandler;
-        _deleteHandler = deleteHandler;
+        _doctorRepository = doctorRepository;
+        _unitOfWork = unitOfWork;
     }
 
     [HttpPost]
-    public async Task<ActionResult<Guid>> Create(CreateDoctorCommand command, CancellationToken cancellationToken)
+    public async Task<ActionResult<Guid>> Create(CreateDoctorRequest request, CancellationToken cancellationToken)
     {
-        var id = await _createHandler.Handle(command, cancellationToken);
+        var id = await _doctorRepository.AddAsync(request.Name, request.Specialty, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id }, id);
     }
 
     [HttpGet]
     public async Task<ActionResult<List<DoctorDto>>> GetAll(CancellationToken cancellationToken)
     {
-        var doctors = await _getAllHandler.Handle(new GetAllDoctorsQuery(), cancellationToken);
-        return Ok(doctors);
+        var doctors = await _doctorRepository.GetAllAsync(cancellationToken);
+        return Ok(doctors.Select(MapToDto).ToList());
     }
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<DoctorDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var doctor = await _getByIdHandler.Handle(new GetDoctorByIdQuery(id), cancellationToken);
+        var doctor = await _doctorRepository.GetByIdAsync(id, cancellationToken);
 
         if (doctor is null)
         {
             return NotFound();
         }
 
-        return Ok(doctor);
+        return Ok(MapToDto(doctor));
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<ActionResult> Update(Guid id, UpdateDoctorCommand command, CancellationToken cancellationToken)
+    public async Task<ActionResult> Update(Guid id, UpdateDoctorRequest request, CancellationToken cancellationToken)
     {
-        command.Id = id;
-        var updated = await _updateHandler.Handle(command, cancellationToken);
+        var updated = await _doctorRepository.UpdateAsync(id, request.Name, request.Specialty, cancellationToken);
 
         if (!updated)
         {
             return NotFound();
         }
 
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         return NoContent();
     }
 
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        var deleted = await _deleteHandler.Handle(new DeleteDoctorCommand { Id = id }, cancellationToken);
+        var deleted = await _doctorRepository.DeleteAsync(id, cancellationToken);
 
         if (!deleted)
         {
             return NotFound();
         }
 
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         return NoContent();
+    }
+
+    private static DoctorDto MapToDto(Doctor doctor)
+    {
+        return new DoctorDto
+        {
+            Id = doctor.Id,
+            Name = doctor.Name,
+            Specialty = doctor.Specialty
+        };
+    }
+
+    public sealed class CreateDoctorRequest
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Specialty { get; set; } = string.Empty;
+    }
+
+    public sealed class UpdateDoctorRequest
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Specialty { get; set; } = string.Empty;
     }
 }
