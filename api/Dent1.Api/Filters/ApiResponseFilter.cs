@@ -4,40 +4,17 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Dent1.Api.Filters;
 
-public class ApiResponseFilter : IActionFilter
+public sealed class ApiResponseFilter : IResultFilter
 {
-    public void OnActionExecuting(ActionExecutingContext context)
+    public void OnResultExecuting(ResultExecutingContext context)
     {
-    }
-
-    public void OnActionExecuted(ActionExecutedContext context)
-    {
-        Console.WriteLine(context) ; 
-        if (context.Exception is not null)
+        if (!ShouldWrap(context.Result))
         {
             return;
         }
 
-        if (context.Result is not ObjectResult objectResult)
-        {
-            return;
-        }
-
+        var objectResult = (ObjectResult)context.Result;
         var statusCode = objectResult.StatusCode ?? StatusCodes.Status200OK;
-        if (statusCode < 200 || statusCode >= 300)
-        {
-            return;
-        }
-
-        if (objectResult.Value is null) // no content case 
-        {
-            return;
-        }
-
-        if (IsAlreadyWrapped(objectResult.Value))
-        {
-            return;
-        }
 
         context.Result = new ObjectResult(new ApiResponse<object>
         {
@@ -50,15 +27,29 @@ public class ApiResponseFilter : IActionFilter
         };
     }
 
-    private static bool IsAlreadyWrapped(object value)
+    public void OnResultExecuted(ResultExecutedContext context)
     {
-        var type = value.GetType();
+    }
 
-        if (!type.IsGenericType)
+    private static bool ShouldWrap(IActionResult result)
+    {
+        if (result is not ObjectResult objectResult)
         {
             return false;
         }
 
-        return type.GetGenericTypeDefinition() == typeof(ApiResponse<>);
+        var statusCode = objectResult.StatusCode ?? StatusCodes.Status200OK;
+
+        return statusCode is >= 200 and < 300
+               && objectResult.Value is not null
+               && !IsAlreadyWrapped(objectResult.Value);
+    }
+
+    private static bool IsAlreadyWrapped(object value)
+    {
+        var type = value.GetType();
+
+        return type.IsGenericType &&
+               type.GetGenericTypeDefinition() == typeof(ApiResponse<>);
     }
 }

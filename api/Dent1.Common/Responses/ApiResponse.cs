@@ -9,6 +9,6 @@ public class ApiResponse<T>
 
 public class ApiError
 {
-    public required string Code { get; set; }
-    public required string Message { get; set; }
+    public string Code { get; set; } = string.Empty;
+    public string Message { get; set; } = string.Empty;
 }
