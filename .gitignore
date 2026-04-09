@@ -1,0 +1,17 @@
+# Build outputs
+**/bin/
+**/obj/
+**/Debug/
+**/Release/
+
+# Test results
+**/TestResults/
+
+# IDE user files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
