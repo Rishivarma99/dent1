@@ -1,8 +1,8 @@
-using Dent1.Business.DTOs;
-using Dent1.Common.Errors;
-using Dent1.Common.Exceptions;
-using Dent1.Data.Entities;
-using Dent1.Data.Interfaces;
+using Dent1.Business.Abstractions;
+using Dent1.Business.Features.Patients.Commands.CreatePatient;
+using Dent1.Business.Features.Patients.Queries.GetAllPatients;
+using Dent1.Business.Features.Patients.Queries.GetPatientById;
+using Dent1.Business.Features.Patients.Queries.SearchPatientsByPhone;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dent1.Api.Controllers;
@@ -11,71 +11,48 @@ namespace Dent1.Api.Controllers;
 [Route("api/[controller]")]
 public class PatientsController : ControllerBase
 {
-    private readonly IPatientRepository _patientRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly ICommandDispatcher _commandDispatcher;
+    private readonly IQueryDispatcher _queryDispatcher;
 
-    public PatientsController(IPatientRepository patientRepository, IUnitOfWork unitOfWork)
+    public PatientsController(ICommandDispatcher commandDispatcher, IQueryDispatcher queryDispatcher)
     {
-        _patientRepository = patientRepository;
-        _unitOfWork = unitOfWork;
+        _commandDispatcher = commandDispatcher;
+        _queryDispatcher = queryDispatcher;
     }
 
     [HttpPost]
-    public async Task<ActionResult<Guid>> Create(CreatePatientRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<CreatePatientResponse>> Create(CreatePatientRequest request, CancellationToken cancellationToken)
     {
-        var id = await _patientRepository.AddAsync(request.Name, request.Phone, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return CreatedAtAction(nameof(GetById), new { id }, id);
+        var command = new CreatePatientCommand(request.Name, request.Phone);
+        var response = await _commandDispatcher.Dispatch(command, cancellationToken);
+        return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<PatientDto>>> GetAll(CancellationToken cancellationToken)
+    public async Task<ActionResult<List<PatientReadModel>>> GetAll(CancellationToken cancellationToken)
     {
-        var patients = await _patientRepository.GetAllAsync(cancellationToken);
-        return Ok(patients.Select(MapToDto).ToList());
+        var patients = await _queryDispatcher.Dispatch(new GetAllPatientsQuery(), cancellationToken);
+        return Ok(patients);
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<PatientDto>> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<PatientReadModel>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var patient = await _patientRepository.GetByIdAsync(id, cancellationToken);
+        var patient = await _queryDispatcher.Dispatch(new GetPatientByIdQuery(id), cancellationToken);
         if (patient is null)
         {
-            throw new AppException(Errors.Patient.NotFound, new Dictionary<string, object>
-            {
-                ["PatientId"] = id
-            });
+            return NotFound();
         }
 
-        return Ok(MapToDto(patient));
+        return Ok(patient);
     }
 
     [HttpGet("search")]
-    public async Task<ActionResult<List<PatientDto>>> SearchByPhone([FromQuery] string phone, CancellationToken cancellationToken)
+    public async Task<ActionResult<List<PatientReadModel>>> SearchByPhone([FromQuery] string phone, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(phone))
-        {
-            throw new AppException(Errors.Patient.InvalidSearchPhone);
-        }
-
-        var patients = await _patientRepository.SearchByPhoneAsync(phone, cancellationToken);
-        return Ok(patients.Select(MapToDto).ToList());
+        var patients = await _queryDispatcher.Dispatch(new SearchPatientsByPhoneQuery(phone), cancellationToken);
+        return Ok(patients);
     }
 
-    private static PatientDto MapToDto(Patient patient)
-    {
-        return new PatientDto
-        {
-            Id = patient.Id,
-            Name = patient.Name,
-            Phone = patient.Phone,
-            CreatedAt = patient.CreatedAt
-        };
-    }
-
-    public sealed class CreatePatientRequest
-    {
-        public string Name { get; set; } = string.Empty;
-        public string Phone { get; set; } = string.Empty;
-    }
+    public sealed record CreatePatientRequest(string Name, string Phone);
 }

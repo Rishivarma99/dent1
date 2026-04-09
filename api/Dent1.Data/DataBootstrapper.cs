@@ -13,7 +13,6 @@ public static class DataBootstrapper
             options.UseNpgsql(connectionString));
 
         services.AddScoped<IPatientRepository, PatientRepository>();
-        services.AddScoped<IDoctorRepository, DoctorRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }

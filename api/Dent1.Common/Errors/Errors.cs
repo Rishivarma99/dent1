@@ -28,6 +28,13 @@ public static class Errors
 
     public static class User
     {
+        public static readonly ErrorDefinition NotFound = new()
+        {
+            Code = "USER_NOT_FOUND",
+            MessageTemplate = "User with id {UserId} not found",
+            StatusCode = 404
+        };
+
         public static readonly ErrorDefinition UsernameExists = new()
         {
             Code = "USER_USERNAME_EXISTS",

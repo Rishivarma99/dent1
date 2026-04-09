@@ -9,7 +9,6 @@ public class DentContext : DbContext
     public DentContext(DbContextOptions<DentContext> options) : base(options) { }
 
     public DbSet<Patient> Patients => Set<Patient>();
-    public DbSet<Doctor> Doctors => Set<Doctor>();
     public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -19,13 +18,6 @@ public class DentContext : DbContext
             entity.HasKey(p => p.Id);
             entity.Property(p => p.Name).IsRequired().HasMaxLength(200);
             entity.Property(p => p.Phone).IsRequired().HasMaxLength(20);
-        });
-
-        modelBuilder.Entity<Doctor>(entity =>
-        {
-            entity.HasKey(d => d.Id);
-            entity.Property(d => d.Name).IsRequired().HasMaxLength(200);
-            entity.Property(d => d.Specialty).IsRequired().HasMaxLength(100);
         });
 
         modelBuilder.Entity<User>(entity =>

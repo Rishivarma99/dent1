@@ -12,6 +12,7 @@ public class ApiResponseFilter : IActionFilter
 
     public void OnActionExecuted(ActionExecutedContext context)
     {
+        Console.WriteLine(context) ; 
         if (context.Exception is not null)
         {
             return;
@@ -28,7 +29,7 @@ public class ApiResponseFilter : IActionFilter
             return;
         }
 
-        if (objectResult.Value is null)
+        if (objectResult.Value is null) // no content case 
         {
             return;
         }
