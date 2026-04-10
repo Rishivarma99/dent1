@@ -3,12 +3,14 @@ using Dent1.Business.Features.Patients.Commands.CreatePatient;
 using Dent1.Business.Features.Patients.Queries.GetAllPatients;
 using Dent1.Business.Features.Patients.Queries.GetPatientById;
 using Dent1.Business.Features.Patients.Queries.SearchPatientsByPhone;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dent1.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class PatientsController : ControllerBase
 {
     private readonly ICommandDispatcher _commandDispatcher;
@@ -20,6 +22,10 @@ public class PatientsController : ControllerBase
         _queryDispatcher = queryDispatcher;
     }
 
+    /// <summary>
+    /// Create a new patient.
+    /// Requires: patient.create permission
+    /// </summary>
     [HttpPost]
     public async Task<ActionResult<CreatePatientResponse>> Create(CreatePatientRequest request, CancellationToken cancellationToken)
     {
@@ -28,6 +34,10 @@ public class PatientsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
     }
 
+    /// <summary>
+    /// Get all patients.
+    /// Requires: patient.read permission
+    /// </summary>
     [HttpGet]
     public async Task<ActionResult<List<PatientReadModel>>> GetAll(CancellationToken cancellationToken)
     {
@@ -35,6 +45,21 @@ public class PatientsController : ControllerBase
         return Ok(patients);
     }
 
+    /// <summary>
+    /// Search patients by phone number.
+    /// Requires: patient.read permission
+    /// </summary>
+    [HttpGet("search")]
+    public async Task<ActionResult<List<PatientReadModel>>> SearchByPhone([FromQuery] string phone, CancellationToken cancellationToken)
+    {
+        var patients = await _queryDispatcher.Dispatch(new SearchPatientsByPhoneQuery(phone), cancellationToken);
+        return Ok(patients);
+    }
+
+    /// <summary>
+    /// Get a specific patient by ID.
+    /// Requires: patient.read permission and scope validation
+    /// </summary>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<PatientReadModel>> GetById(Guid id, CancellationToken cancellationToken)
     {
@@ -45,13 +70,6 @@ public class PatientsController : ControllerBase
         }
 
         return Ok(patient);
-    }
-
-    [HttpGet("search")]
-    public async Task<ActionResult<List<PatientReadModel>>> SearchByPhone([FromQuery] string phone, CancellationToken cancellationToken)
-    {
-        var patients = await _queryDispatcher.Dispatch(new SearchPatientsByPhoneQuery(phone), cancellationToken);
-        return Ok(patients);
     }
 
     public sealed record CreatePatientRequest(string Name, string Phone);

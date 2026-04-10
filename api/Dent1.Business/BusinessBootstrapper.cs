@@ -19,10 +19,15 @@ public static class BusinessBootstrapper
         services.AddSingleton<IPasswordService, PasswordService>();
         services.AddScoped<IPatientService, PatientService>();
 
+        // Authorization services
+        services.AddScoped<IPermissionService, PermissionService>();
+        services.AddScoped<IResourceAccessService, ResourceAccessService>();
+
         services.AddScoped<ICommandDispatcher, CommandDispatcher>();
         services.AddScoped<IQueryDispatcher, QueryDispatcher>();
 
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehavior<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
 

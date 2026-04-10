@@ -58,6 +58,34 @@ public static class Errors
             MessageTemplate = "You are not allowed to access this resource",
             StatusCode = 403
         };
+
+        public static readonly ErrorDefinition PermissionDenied = new()
+        {
+            Code = "PERMISSION_DENIED",
+            MessageTemplate = "You do not have permission to perform this action",
+            StatusCode = 403
+        };
+
+        public static readonly ErrorDefinition ScopeDenied = new()
+        {
+            Code = "SCOPE_DENIED",
+            MessageTemplate = "You cannot access this resource",
+            StatusCode = 403
+        };
+
+        public static readonly ErrorDefinition PolicyViolation = new()
+        {
+            Code = "POLICY_VIOLATION",
+            MessageTemplate = "This action is not allowed in the current state",
+            StatusCode = 422
+        };
+
+        public static readonly ErrorDefinition InsufficientPermission = new()
+        {
+            Code = "INSUFFICIENT_PERMISSION",
+            MessageTemplate = "Insufficient permissions for operation: {Operation}",
+            StatusCode = 403
+        };
     }
 
     public static class Common

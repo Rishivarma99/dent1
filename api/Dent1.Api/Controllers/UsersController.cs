@@ -5,12 +5,14 @@ using Dent1.Business.Features.Users.Commands.UpdateUser;
 using Dent1.Business.Features.Users.Queries.GetAllUsers;
 using Dent1.Business.Features.Users.Queries.GetUserById;
 using Dent1.Data.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dent1.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class UsersController : ControllerBase
 {
     private readonly ICommandDispatcher _commandDispatcher;
@@ -22,6 +24,10 @@ public class UsersController : ControllerBase
         _queryDispatcher = queryDispatcher;
     }
 
+    /// <summary>
+    /// Create a new user.
+    /// Requires: user.manage permission (admin only)
+    /// </summary>
     [HttpPost]
     public async Task<ActionResult<CreateUserResponse>> Create(CreateUserRequest request, CancellationToken cancellationToken)
     {
@@ -39,6 +45,10 @@ public class UsersController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
     }
 
+    /// <summary>
+    /// Get all users.
+    /// Requires: user.read permission (admin only)
+    /// </summary>
     [HttpGet]
     public async Task<ActionResult<List<UserReadModel>>> GetAll(CancellationToken cancellationToken)
     {
@@ -46,6 +56,10 @@ public class UsersController : ControllerBase
         return Ok(users);
     }
 
+    /// <summary>
+    /// Get a specific user by ID.
+    /// Requires: user.read permission and scope validation
+    /// </summary>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<UserReadModel>> GetById(Guid id, CancellationToken cancellationToken)
     {
@@ -59,6 +73,10 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
+    /// <summary>
+    /// Update an existing user.
+    /// Requires: user.manage permission (admin only) or own user update permission
+    /// </summary>
     [HttpPut("{id:guid}")]
     public async Task<ActionResult> Update(Guid id, UpdateUserRequest request, CancellationToken cancellationToken)
     {
@@ -80,6 +98,10 @@ public class UsersController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Delete a user.
+    /// Requires: user.manage permission (admin only)
+    /// </summary>
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
