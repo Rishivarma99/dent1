@@ -1,8 +1,11 @@
+using Dent1.Api.Authorization;
+using Dent1.Api.Contracts.Requests.Patients;
 using Dent1.Business.Abstractions;
 using Dent1.Business.Features.Patients.Commands.CreatePatient;
 using Dent1.Business.Features.Patients.Queries.GetAllPatients;
 using Dent1.Business.Features.Patients.Queries.GetPatientById;
 using Dent1.Business.Features.Patients.Queries.SearchPatientsByPhone;
+using Dent1.Common.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +29,7 @@ public class PatientsController : ControllerBase
     /// Create a new patient.
     /// Requires: patient.create permission
     /// </summary>
+    [HasPermission(PermissionCodes.PatientCreate)]
     [HttpPost]
     public async Task<ActionResult<CreatePatientResponse>> Create(CreatePatientRequest request, CancellationToken cancellationToken)
     {
@@ -38,6 +42,7 @@ public class PatientsController : ControllerBase
     /// Get all patients.
     /// Requires: patient.read permission
     /// </summary>
+    [HasPermission(PermissionCodes.PatientRead)]
     [HttpGet]
     public async Task<ActionResult<List<PatientReadModel>>> GetAll(CancellationToken cancellationToken)
     {
@@ -49,6 +54,7 @@ public class PatientsController : ControllerBase
     /// Search patients by phone number.
     /// Requires: patient.read permission
     /// </summary>
+    [HasPermission(PermissionCodes.PatientRead)]
     [HttpGet("search")]
     public async Task<ActionResult<List<PatientReadModel>>> SearchByPhone([FromQuery] string phone, CancellationToken cancellationToken)
     {
@@ -60,6 +66,7 @@ public class PatientsController : ControllerBase
     /// Get a specific patient by ID.
     /// Requires: patient.read permission and scope validation
     /// </summary>
+    [HasPermission(PermissionCodes.PatientRead)]
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<PatientReadModel>> GetById(Guid id, CancellationToken cancellationToken)
     {
@@ -71,6 +78,4 @@ public class PatientsController : ControllerBase
 
         return Ok(patient);
     }
-
-    public sealed record CreatePatientRequest(string Name, string Phone);
 }

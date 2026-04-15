@@ -30,9 +30,16 @@ public static class PresentationExtensions
         app.UseHttpsRedirection();
         app.UseCors(CorsExtensions.FrontendCorsPolicyName);
         app.UseAuthentication();
+        app.UseTenantResolution();  // Must be after authentication to access User claims
         app.UseAuthorization();
         app.MapControllers();
 
+        return app;
+    }
+
+    public static WebApplication UseTenantResolution(this WebApplication app)
+    {
+        app.UseMiddleware<TenantResolutionMiddleware>();
         return app;
     }
 }

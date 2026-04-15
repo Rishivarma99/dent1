@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Dent1.Business.Services;
 
 namespace Dent1.Api.Extensions;
 
@@ -26,6 +27,25 @@ public static class JwtAuthenticationExtensions
                     ValidIssuer = jwtIssuer,
                     ValidAudience = jwtAudience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = async context =>
+                    {
+                        var tokenValidationService = context.HttpContext.RequestServices
+                            .GetRequiredService<ITokenValidationService>();
+
+                        var result = await tokenValidationService.ValidateAsync(
+                            context.Principal!,
+                            context.HttpContext.RequestAborted);
+
+                        if (!result.IsValid)
+                        {
+                            context.Fail(result.FailureReason ?? "Token validation failed.");
+                            return;
+                        }
+                    }
                 };
             });
 

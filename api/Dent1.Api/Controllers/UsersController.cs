@@ -1,9 +1,12 @@
+using Dent1.Api.Authorization;
+using Dent1.Api.Contracts.Requests.Users;
 using Dent1.Business.Abstractions;
 using Dent1.Business.Features.Users.Commands.CreateUser;
 using Dent1.Business.Features.Users.Commands.DeleteUser;
 using Dent1.Business.Features.Users.Commands.UpdateUser;
 using Dent1.Business.Features.Users.Queries.GetAllUsers;
 using Dent1.Business.Features.Users.Queries.GetUserById;
+using Dent1.Common.Authorization;
 using Dent1.Data.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +31,7 @@ public class UsersController : ControllerBase
     /// Create a new user.
     /// Requires: user.manage permission (admin only)
     /// </summary>
+    [HasPermission(PermissionCodes.UserManage)]
     [HttpPost]
     public async Task<ActionResult<CreateUserResponse>> Create(CreateUserRequest request, CancellationToken cancellationToken)
     {
@@ -49,6 +53,7 @@ public class UsersController : ControllerBase
     /// Get all users.
     /// Requires: user.read permission (admin only)
     /// </summary>
+    [HasPermission(PermissionCodes.UserRead)]
     [HttpGet]
     public async Task<ActionResult<List<UserReadModel>>> GetAll(CancellationToken cancellationToken)
     {
@@ -60,6 +65,7 @@ public class UsersController : ControllerBase
     /// Get a specific user by ID.
     /// Requires: user.read permission and scope validation
     /// </summary>
+    [HasPermission(PermissionCodes.UserRead)]
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<UserReadModel>> GetById(Guid id, CancellationToken cancellationToken)
     {
@@ -77,6 +83,7 @@ public class UsersController : ControllerBase
     /// Update an existing user.
     /// Requires: user.manage permission (admin only) or own user update permission
     /// </summary>
+    [HasPermission(PermissionCodes.UserManage)]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult> Update(Guid id, UpdateUserRequest request, CancellationToken cancellationToken)
     {
@@ -102,6 +109,7 @@ public class UsersController : ControllerBase
     /// Delete a user.
     /// Requires: user.manage permission (admin only)
     /// </summary>
+    [HasPermission(PermissionCodes.UserManage)]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
@@ -113,21 +121,4 @@ public class UsersController : ControllerBase
         }
         return NoContent();
     }
-
-    public sealed record CreateUserRequest(
-        string Name,
-        string Email,
-        string Username,
-        string PhoneNumber,
-        string Password,
-        UserRole Role,
-        bool IsActive = true);
-
-    public sealed record UpdateUserRequest(
-        string Name,
-        string Email,
-        string Username,
-        string PhoneNumber,
-        UserRole Role,
-        bool IsActive);
 }

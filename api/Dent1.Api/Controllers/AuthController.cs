@@ -1,4 +1,6 @@
-using Dent1.Api.Services;
+﻿using Dent1.Api.Contracts.Requests.Auth;
+using Dent1.Api.Contracts.Responses.Auth;
+using Dent1.Business.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,13 +24,23 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<AuthResponse>> Login(LoginRequest request, CancellationToken cancellationToken)
     {
-        var result = await _authService.LoginAsync(request, cancellationToken);
+        var result = await _authService.LoginAsync(
+            new SignInRequest(request.UsernameOrPhone, request.Password),
+            cancellationToken);
+
         if (result is null)
         {
             return Unauthorized("Invalid credentials.");
         }
 
-        return Ok(result);
+        return Ok(new AuthResponse
+        {
+            AccessToken = result.AccessToken,
+            RefreshToken = result.RefreshToken,
+            UserId = result.UserId,
+            Role = result.Role,
+            AccessTokenExpiresInSeconds = result.AccessTokenExpiresInSeconds
+        });
     }
 
     /// <summary>
@@ -38,12 +50,22 @@ public class AuthController : ControllerBase
     [HttpPost("refresh")]
     public async Task<ActionResult<AuthResponse>> Refresh(RefreshTokenRequest request, CancellationToken cancellationToken)
     {
-        var result = await _authService.RefreshAsync(request, cancellationToken);
+        var result = await _authService.RefreshAsync(
+            new RefreshSessionRequest(request.RefreshToken),
+            cancellationToken);
+
         if (result is null)
         {
             return Unauthorized("Invalid or expired refresh token.");
         }
 
-        return Ok(result);
+        return Ok(new AuthResponse
+        {
+            AccessToken = result.AccessToken,
+            RefreshToken = result.RefreshToken,
+            UserId = result.UserId,
+            Role = result.Role,
+            AccessTokenExpiresInSeconds = result.AccessTokenExpiresInSeconds
+        });
     }
 }

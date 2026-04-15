@@ -55,14 +55,14 @@ public static class Errors
         public static readonly ErrorDefinition Unauthorized = new()
         {
             Code = "UNAUTHORIZED",
-            MessageTemplate = "You are not allowed to access this resource",
-            StatusCode = 403
+            MessageTemplate = "Authentication is required to access this resource",
+            StatusCode = 401
         };
 
         public static readonly ErrorDefinition PermissionDenied = new()
         {
             Code = "PERMISSION_DENIED",
-            MessageTemplate = "You do not have permission to perform this action",
+            MessageTemplate = "You do not have permission: {Permission}",
             StatusCode = 403
         };
 

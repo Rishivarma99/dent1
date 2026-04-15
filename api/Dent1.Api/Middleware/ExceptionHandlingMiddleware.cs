@@ -23,17 +23,32 @@ public class ExceptionHandlingMiddleware
         }
         catch (AppException ex)
         {
-            _logger.LogWarning(ex, "Business error: {Code}", ex.Error.Code);
+            _logger.LogWarning(
+                "Business error: {Code}. Path: {Path}. TraceId: {TraceId}",
+                ex.Error.Code,
+                context.Request.Path,
+                context.TraceIdentifier);
+
             await HandleAppExceptionAsync(context, ex);
         }
         catch (GenericException ex)
         {
-            _logger.LogError(ex, "Generic exception");
+            _logger.LogError(
+                "Application error: {Message}. Path: {Path}. TraceId: {TraceId}",
+                ex.Message,
+                context.Request.Path,
+                context.TraceIdentifier);
+
             await HandleGenericExceptionAsync(context);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unhandled exception");
+            _logger.LogError(
+                ex,
+                "Unhandled exception. Path: {Path}. TraceId: {TraceId}",
+                context.Request.Path,
+                context.TraceIdentifier);
+
             await HandleGenericExceptionAsync(context);
         }
     }

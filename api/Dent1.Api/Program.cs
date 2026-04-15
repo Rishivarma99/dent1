@@ -13,6 +13,9 @@ var app = builder.Build();
 
 app.UsePresentationPipeline();
 
-await app.SeedAsync();
+if (app.Environment.IsDevelopment())
+{
+    await app.MigrateAndSeedAsync();
+}
 
 app.Run();

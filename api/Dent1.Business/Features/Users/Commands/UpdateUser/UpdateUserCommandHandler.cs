@@ -1,23 +1,29 @@
 using Dent1.Business.Abstractions;
 using Dent1.Common.Errors;
 using Dent1.Common.Exceptions;
+using Dent1.Common.MultiTenancy;
 using Dent1.Data.Interfaces;
 
 namespace Dent1.Business.Features.Users.Commands.UpdateUser;
 
 public sealed class UpdateUserCommandHandler : ICommandHandler<UpdateUserCommand, bool>
 {
+    private readonly ICurrentTenant _currentTenant;
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public UpdateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
+    public UpdateUserCommandHandler(ICurrentTenant currentTenant, IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
+        _currentTenant = currentTenant;
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
     }
 
     public async Task<bool> Handle(UpdateUserCommand command, CancellationToken cancellationToken)
     {
+        if (!_currentTenant.IsResolved)
+            throw new InvalidOperationException("Tenant not resolved.");
+
         if (await _userRepository.ExistsByUsernameAsync(command.Username, command.Id, cancellationToken))
         {
             throw new AppException(Errors.User.UsernameExists);
@@ -35,6 +41,7 @@ public sealed class UpdateUserCommandHandler : ICommandHandler<UpdateUserCommand
             command.Username.Trim(),
             command.PhoneNumber.Trim(),
             command.Role,
+            _currentTenant.TenantId,
             command.IsActive,
             cancellationToken);
 
