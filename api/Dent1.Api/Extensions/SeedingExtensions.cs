@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Dent1.Api.Extensions;
 
+// ONLY CALLED IN DEVELOPMENT
 public static class SeedingExtensions
 {
     public static async Task MigrateAndSeedAsync(this WebApplication app, CancellationToken cancellationToken = default)

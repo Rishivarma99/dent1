@@ -17,6 +17,7 @@ public static class DataBootstrapper
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITenantRepository, TenantRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        // SEEDING SERVICES
         services.AddScoped<ITenantSeedService, TenantSeedService>();
         services.AddScoped<IRoleSeedService, RoleSeedService>();
         services.AddScoped<IPermissionSeedService, PermissionSeedService>();
