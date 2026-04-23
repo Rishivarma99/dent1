@@ -8,10 +8,10 @@ public class DentContextFactory : IDesignTimeDbContextFactory<DentContext>
     public DentContext CreateDbContext(string[] args)
     {
         var connectionString = Environment.GetEnvironmentVariable("DENT1_CONNECTION")
-            ?? "Host=localhost;Database=Dent1;Username=postgres;Password=root";
+            ?? "Data Source=DESKTOP-BDENLBT\\SQLEXPRESS;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=True;Application Name=\"SQL Server Management Studio\";Command Timeout=0";
 
         var optionsBuilder = new DbContextOptionsBuilder<DentContext>();
-        optionsBuilder.UseNpgsql(connectionString);
+        optionsBuilder.UseSqlServer(connectionString);
 
         return new DentContext(optionsBuilder.Options);
     }

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Dent1.Data.Interfaces;
 using Dent1.Data.Repositories;
@@ -11,7 +12,9 @@ public static class DataBootstrapper
     public static void Register(IServiceCollection services, string connectionString)
     {
         services.AddDbContext<DentContext>(options =>
-            options.UseNpgsql(connectionString));
+            options
+                .UseSqlServer(connectionString)
+                .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)));
 
         services.AddScoped<IPatientRepository, PatientRepository>();
         services.AddScoped<IUserRepository, UserRepository>();

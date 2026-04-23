@@ -1,5 +1,4 @@
-﻿using Dent1.Api.Authorization;
-using Dent1.Business.MultiTenancy;
+﻿using Dent1.Business.MultiTenancy;
 using Dent1.Business.Security;
 using Dent1.Common.MultiTenancy;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +13,6 @@ public static class ApiServicesExtensions
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ICurrentUser, CurrentUserAccessor>();
-        services.AddScoped<PermissionAuthorizationFilter>();
 
         return services;
     }
