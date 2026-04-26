@@ -1,0 +1,39 @@
+:host {
+  display: block;
+}
+
+:host ::ng-deep .top-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  border: 0;
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: 0;
+  background: #ffffff;
+  padding-inline: 1rem;
+}
+
+.welcome-block .title {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.welcome-block .subtitle {
+  color: #6b7280;
+  font-size: 0.92rem;
+}
+
+.user-block {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.user-name {
+  font-weight: 600;
+}
+
+.user-role {
+  font-size: 0.8rem;
+  color: #6b7280;
+}

@@ -1,0 +1,16 @@
+---
+description: Tailwind integration conventions for frontend
+globs: frontend/**
+alwaysApply: false
+---
+
+# Tailwind Integration (Frontend Local)
+
+- Use `.postcssrc.json` as the PostCSS source of truth for this frontend project.
+- Keep a single Tailwind entry import in `frontend/src/styles.css` using `@import 'tailwindcss';`.
+- Do not add duplicate Tailwind imports in component styles or additional global files.
+- Keep Tailwind setup in app-level styles/config; feature code should only use utility classes.
+- If Tailwind stops working, first verify:
+  - `.postcssrc.json` exists and has `@tailwindcss/postcss`
+  - `frontend/src/styles.css` includes `@import 'tailwindcss';`
+  - app build references `src/styles.css` in `angular.json`

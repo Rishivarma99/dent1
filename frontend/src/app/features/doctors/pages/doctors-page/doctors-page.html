@@ -1,0 +1,52 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="doctors-layout">
+  <app-sidebar-nav />
+
+  <main class="doctors-main">
+    <app-top-header />
+
+    <section class="page-shell">
+      <div class="title-row">
+        <h2>Doctors</h2>
+        <button pButton type="button" icon="pi pi-plus" label="Add Doctor" (click)="openNew()"></button>
+      </div>
+
+      <p-table [value]="doctors()" [loading]="loading()" [paginator]="true" [rows]="8" responsiveLayout="scroll">
+        <ng-template #header>
+          <tr>
+            <th>Name</th>
+            <th>Specialty</th>
+            <th style="width: 180px">Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-doctor>
+          <tr>
+            <td>{{ doctor.name }}</td>
+            <td>{{ doctor.specialty }}</td>
+            <td class="actions">
+              <button pButton type="button" icon="pi pi-pencil" severity="secondary" (click)="openEdit(doctor)"></button>
+              <button pButton type="button" icon="pi pi-trash" severity="danger" (click)="confirmDelete(doctor)"></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+
+      <p-dialog [header]="dialogTitle()" [modal]="true" [(visible)]="dialogVisible" [style]="{ width: '28rem' }">
+        <form class="doctor-form" [formGroup]="form" (ngSubmit)="saveDoctor()">
+          <label for="doctor-name">Name</label>
+          <input id="doctor-name" pInputText formControlName="name" />
+
+          <label for="doctor-specialty">Specialty</label>
+          <input id="doctor-specialty" pInputText formControlName="specialty" />
+
+          <div class="dialog-actions">
+            <button pButton type="button" label="Cancel" severity="secondary" (click)="dialogVisible.set(false)"></button>
+            <button pButton type="submit" label="Save" [disabled]="form.invalid"></button>
+          </div>
+        </form>
+      </p-dialog>
+    </section>
+  </main>
+</div>
