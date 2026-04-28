@@ -1,0 +1,15 @@
+.app-footer {
+  height: var(--layout-footer-height, 2.5rem);
+  border-top: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-surface, #ffffff);
+  color: var(--color-text-muted, #6b7280);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-4, 1rem);
+  font-size: 0.85rem;
+}
+
+.app-footer__meta {
+  font-weight: 500;
+}

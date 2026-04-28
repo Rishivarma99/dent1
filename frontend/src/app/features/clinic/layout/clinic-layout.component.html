@@ -1,0 +1,21 @@
+<div class="clinic-layout" [class.clinic-layout--mobile-sidebar-open]="isMobileSidebarOpen()">
+  <app-sidebar class="clinic-layout__sidebar" />
+
+  <app-header class="clinic-layout__header" (openSidebar)="toggleMobileSidebar()" />
+
+  <main class="clinic-layout__main">
+    <router-outlet />
+  </main>
+
+  <app-footer class="clinic-layout__footer" />
+
+  @if (isMobileSidebarOpen()) {
+    <button
+      type="button"
+      class="clinic-layout__backdrop"
+      aria-label="Close sidebar"
+      (click)="closeMobileSidebar()"
+    ></button>
+  }
+
+</div>

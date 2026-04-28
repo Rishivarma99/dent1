@@ -1,0 +1,32 @@
+<header class="clinic-header">
+  <div class="clinic-header__start">
+    <button
+      type="button"
+      class="clinic-header__menu-toggle"
+      aria-label="Open sidebar"
+      (click)="onOpenSidebar()"
+    >
+      <i class="pi pi-bars"></i>
+    </button>
+
+    <nav class="clinic-header__breadcrumbs" aria-label="Breadcrumb">
+      <span>Clinic</span>
+      <span>/</span>
+      <span class="clinic-header__breadcrumb-current">Dashboard</span>
+    </nav>
+  </div>
+
+  <div class="clinic-header__center"></div>
+
+  <div class="clinic-header__end">
+    <button type="button" class="clinic-header__icon-button" aria-label="Notifications">
+      <i class="pi pi-bell"></i>
+    </button>
+
+    <button type="button" class="clinic-header__profile" aria-label="Profile menu">
+      <img class="clinic-header__avatar" src="https://i.pravatar.cc/64?img=12" alt="User profile" />
+      <span class="clinic-header__user-name">Dr. Ravi</span>
+      <span class="clinic-header__profile-arrow">&#x2304;</span>
+    </button>
+  </div>
+</header>
