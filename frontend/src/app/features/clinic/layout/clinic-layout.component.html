@@ -1,7 +1,15 @@
-<div class="clinic-layout" [class.clinic-layout--mobile-sidebar-open]="isMobileSidebarOpen()">
-  <app-sidebar class="clinic-layout__sidebar" />
+<div class="clinic-layout" [class.clinic-layout--sidebar-open]="isSidebarOpen()">
+  <app-sidebar
+    class="clinic-layout__sidebar"
+    [isOpen]="isSidebarOpen()"
+    (toggleSidebar)="toggleSidebar()"
+    (closeSidebar)="closeSidebar()"
+  />
 
-  <app-header class="clinic-layout__header" (openSidebar)="toggleMobileSidebar()" />
+  <app-header
+    class="clinic-layout__header"
+    (openSidebar)="openSidebar()"
+  />
 
   <main class="clinic-layout__main">
     <router-outlet />
@@ -9,13 +17,12 @@
 
   <app-footer class="clinic-layout__footer" />
 
-  @if (isMobileSidebarOpen()) {
+  @if (isSidebarOpen()) {
     <button
       type="button"
       class="clinic-layout__backdrop"
       aria-label="Close sidebar"
-      (click)="closeMobileSidebar()"
+      (click)="closeSidebar()"
     ></button>
   }
-
 </div>

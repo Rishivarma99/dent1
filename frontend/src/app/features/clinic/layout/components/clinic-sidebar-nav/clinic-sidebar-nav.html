@@ -1,13 +1,55 @@
-<aside class="sidebar-shell">
-  <div class="brand-block">
-    <div class="brand-title">Dentova</div>
-    <div class="brand-subtitle">CLINICAL PRECISION</div>
+<aside class="clinic-sidebar">
+  <div class="clinic-sidebar__header">
+    <a class="clinic-sidebar__brand" routerLink="/dashboard" aria-label="Dentova home">
+      <span class="clinic-sidebar__brand-mark" aria-hidden="true">D</span>
+      <span class="clinic-sidebar__brand-text">
+        <span class="clinic-sidebar__brand-title">Dentova</span>
+        <span class="clinic-sidebar__brand-subtitle">CLINICAL PRECISION</span>
+      </span>
+    </a>
+
+    <button
+      type="button"
+      class="clinic-sidebar__close"
+      aria-label="Close sidebar"
+      (click)="onClose()"
+    >
+      <i class="pi pi-times" aria-hidden="true"></i>
+    </button>
+
+    <button
+      type="button"
+      class="clinic-sidebar__toggle"
+      aria-label="Toggle sidebar"
+      (click)="onToggle()"
+    >
+      <i class="pi pi-bars" aria-hidden="true"></i>
+    </button>
   </div>
 
-  <p-menu [model]="menuItems" styleClass="sidebar-menu"></p-menu>
+  <nav class="clinic-sidebar__nav" aria-label="Primary">
+    <ul class="clinic-sidebar__nav-list">
+      @for (item of menuItems; track item.routerLink) {
+        <li>
+          <a
+            class="clinic-sidebar__nav-item"
+            [routerLink]="item.routerLink"
+            routerLinkActive="clinic-sidebar__nav-item--active"
+            [pTooltip]="item.label"
+            tooltipPosition="right"
+            [attr.title]="item.label"
+            [attr.aria-label]="item.label"
+          >
+            <i class="clinic-sidebar__nav-icon" [ngClass]="item.icon" aria-hidden="true"></i>
+            <span class="clinic-sidebar__nav-label">{{ item.label }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
 
-  <div class="clinic-meta">
-    <div>Sunrise Dental Clinic</div>
-    <small>v1.0.0</small>
+  <div class="clinic-sidebar__footer">
+    <span class="clinic-sidebar__footer-name">Sunrise Dental Clinic</span>
+    <small class="clinic-sidebar__footer-version">v1.0.0</small>
   </div>
 </aside>

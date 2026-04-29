@@ -2,6 +2,7 @@
   --current-sidebar-width: 0px;
 }
 
+/* mobile: drawer (closed by default) */
 .clinic-layout__sidebar {
   position: fixed;
   inset-block: 0;
@@ -14,7 +15,7 @@
     width 180ms ease;
 }
 
-.clinic-layout--mobile-sidebar-open .clinic-layout__sidebar {
+.clinic-layout--sidebar-open .clinic-layout__sidebar {
   transform: translateX(0);
 }
 
@@ -25,6 +26,7 @@
   right: 0;
   height: var(--layout-header-height);
   z-index: var(--z-header);
+  transition: left 180ms ease;
 }
 
 .clinic-layout__main {
@@ -36,6 +38,7 @@
     var(--layout-footer-height) + var(--layout-content-padding)
   );
   overflow: auto;
+  transition: margin-left 180ms ease;
 }
 
 .clinic-layout__footer {
@@ -45,23 +48,30 @@
   bottom: 0;
   height: var(--layout-footer-height);
   z-index: var(--z-footer);
+  transition: left 180ms ease;
 }
 
 .clinic-layout__backdrop {
   position: fixed;
   inset: 0;
   background: rgb(0 0 0 / 0.35);
+  border: 0;
   z-index: calc(var(--z-sidebar) - 1);
 }
 
+/* tablet: sidebar always visible, collapsed icon-only by default */
 @media (min-width: 640px) {
   .clinic-layout {
     --current-sidebar-width: var(--layout-sidebar-collapsed-width);
   }
 
   .clinic-layout__sidebar {
-    width: var(--layout-sidebar-collapsed-width);
+    width: var(--current-sidebar-width);
     transform: translateX(0);
+  }
+
+  .clinic-layout--sidebar-open {
+    --current-sidebar-width: var(--layout-sidebar-expanded-width);
   }
 
   .clinic-layout__backdrop {
@@ -69,12 +79,18 @@
   }
 }
 
+/* desktop: force expanded by default */
 @media (min-width: 1024px) {
+  .clinic-layout--sidebar-open {
+    --current-sidebar-width: var(--layout-sidebar-expanded-width);
+  }
+
   .clinic-layout {
     --current-sidebar-width: var(--layout-sidebar-expanded-width);
   }
 
   .clinic-layout__sidebar {
     width: var(--layout-sidebar-expanded-width);
+    transform: translateX(0);
   }
 }
