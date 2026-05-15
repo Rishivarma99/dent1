@@ -1,0 +1,25 @@
+# Build artifacts
+**/bin
+**/obj
+**/dist
+**/node_modules
+
+# IDE / VCS
+.git
+.github
+.vs
+.vscode
+.idea
+
+# Local files
+**/*.user
+**/*.suo
+**/*.log
+
+# Env files (compose loads these explicitly; don't bake them into images)
+.env
+docker/.env.newrelic
+
+# Docs / scratch
+artifacts
+**/*.md

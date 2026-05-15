@@ -1,0 +1,45 @@
+# Lock the compose project namespace so this stack stays isolated from any
+# other stack running on the same host (e.g. b2b-analytics). Result:
+#   - Containers:  dent1-api / dent1-frontend
+#   - Network:     dent1_dent1-net (compose prefixes with the project name)
+name: dent1
+
+services:
+  api:
+    container_name: dent1-api
+    build:
+      context: ..
+      dockerfile: docker/api/Dockerfile
+      target: ${API_BUILD_TARGET:-development}
+    restart: unless-stopped
+    env_file:
+      - ../.env
+      - .env.newrelic
+    environment:
+      ConnectionStrings__DefaultConnection: "Data Source=host.docker.internal\\SQLEXPRESS;Database=Dent1;User Id=${SQL_SERVER_USER};Password=${SQL_SERVER_PASSWORD};TrustServerCertificate=True;Encrypt=False;MultipleActiveResultSets=True;"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${API_HOST_PORT:-5003}:8080"
+    networks:
+      - dent1-net
+
+  frontend:
+    container_name: dent1-frontend
+    build:
+      context: ..
+      dockerfile: docker/frontend/Dockerfile
+      target: ${FRONTEND_BUILD_TARGET:-production}
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    ports:
+      - "${FRONTEND_HOST_PORT:-4201}:${FRONTEND_CONTAINER_PORT:-80}"
+    networks:
+      - dent1-net
+    depends_on:
+      - api
+
+networks:
+  dent1-net:
+    driver: bridge

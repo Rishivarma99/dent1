@@ -1,27 +1,35 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, computed, inject, signal } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  computed,
+  inject,
+  signal
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import {
+  Auth,
+  ConfirmationResult,
+  GoogleAuthProvider,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  signInWithPopup
+} from '@angular/fire/auth';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { DividerModule } from 'primeng/divider';
 import { InputOtpModule } from 'primeng/inputotp';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
-import { Auth, RecaptchaVerifier, signInWithPopup, GoogleAuthProvider, signInWithPhoneNumber, ConfirmationResult } from '@angular/fire/auth';
 import { startWith } from 'rxjs';
+
+type LoginTab = 'credentials' | 'mobile';
 
 @Component({
   selector: 'app-login-page',
-  imports: [
-    ReactiveFormsModule,
-    ButtonModule,
-    CardModule,
-    DividerModule,
-    InputOtpModule,
-    InputTextModule,
-    SelectModule
-  ],
+  imports: [ReactiveFormsModule, ButtonModule, InputOtpModule, InputTextModule, SelectModule],
   templateUrl: './login-page.html',
   styleUrl: './login-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -30,47 +38,16 @@ export class LoginPage implements AfterViewInit, OnDestroy {
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly auth = inject(Auth);
+  private readonly cdr = inject(ChangeDetectorRef);
+
+  protected readonly currentYear = new Date().getFullYear();
+  protected readonly activeTab = signal<LoginTab>('credentials');
 
   private recaptchaVerifier: RecaptchaVerifier | null = null;
+  private recaptchaInitPromise: Promise<void> | null = null;
   private confirmationResult: ConfirmationResult | null = null;
   protected readonly recaptchaReady = signal(false);
-  protected readonly otpStatus = signal('');
-
-  constructor() {
-    console.log('Firebase Auth:', this.auth);
-  }
-
-  async ngAfterViewInit(): Promise<void> {
-    if (this.recaptchaVerifier) {
-      return;
-    }
-
-    this.recaptchaVerifier = new RecaptchaVerifier(this.auth, 'recaptcha-container', {
-      size: 'normal'
-    });
-
-    try {
-      console.log('recapche rendering ');
-
-      await this.recaptchaVerifier.render();
-      this.recaptchaReady.set(true);
-      this.otpStatus.set('reCAPTCHA ready. You can send OTP now.');
-    } catch (error) {
-      console.error('Failed to render reCAPTCHA:', error);
-      this.recaptchaReady.set(false);
-      this.otpStatus.set('Failed to initialize reCAPTCHA. Disable ad-blockers and refresh.');
-    }
-  }
-
-  ngOnDestroy(): void {
-    if (this.recaptchaVerifier) {
-      this.recaptchaVerifier.clear();
-      this.recaptchaVerifier = null;
-    }
-    this.recaptchaReady.set(false);
-    this.otpStatus.set('');
-  }
-
+  protected readonly statusMessage = signal('');
   protected readonly otpSent = signal(false);
 
   protected readonly countryCodeOptions = [
@@ -81,19 +58,28 @@ export class LoginPage implements AfterViewInit, OnDestroy {
     { label: 'Singapore (+65)', value: '+65' }
   ];
 
+  protected readonly credentialsForm = this.formBuilder.nonNullable.group({
+    email: ['', [Validators.required]],
+    password: ['', [Validators.required]]
+  });
+
   protected readonly phoneForm = this.formBuilder.nonNullable.group({
     countryCode: ['+91', [Validators.required]],
     phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
-    otp: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]]
+    otp: ['']
   });
 
   private readonly countryCodeValue = toSignal(
-    this.phoneForm.controls.countryCode.valueChanges.pipe(startWith(this.phoneForm.controls.countryCode.value)),
+    this.phoneForm.controls.countryCode.valueChanges.pipe(
+      startWith(this.phoneForm.controls.countryCode.value)
+    ),
     { initialValue: this.phoneForm.controls.countryCode.value }
   );
 
   private readonly phoneNumberValue = toSignal(
-    this.phoneForm.controls.phoneNumber.valueChanges.pipe(startWith(this.phoneForm.controls.phoneNumber.value)),
+    this.phoneForm.controls.phoneNumber.valueChanges.pipe(
+      startWith(this.phoneForm.controls.phoneNumber.value)
+    ),
     { initialValue: this.phoneForm.controls.phoneNumber.value }
   );
 
@@ -102,20 +88,11 @@ export class LoginPage implements AfterViewInit, OnDestroy {
     { initialValue: this.phoneForm.controls.otp.value }
   );
 
-  protected readonly canSendOtp = computed(() => {
+  protected readonly isPhoneValid = computed(() => {
     const countryCode = this.countryCodeValue();
     const value = (this.phoneNumberValue() ?? '').replace(/\D/g, '');
-    return this.recaptchaReady() && !!countryCode && value.length === 10 && /^\d{10}$/.test(value);
+    return !!countryCode && value.length === 10 && /^\d{10}$/.test(value);
   });
-
-  onPhoneInput(event: any): void {
-    const input = event.target;
-    let value = input.value.replace(/\D/g, '');
-    if (value.length > 10) {
-      value = value.slice(0, 10);
-    }
-    this.phoneForm.controls.phoneNumber.setValue(value);
-  }
 
   protected readonly canVerifyOtp = computed(() => {
     this.otpValue();
@@ -123,62 +100,146 @@ export class LoginPage implements AfterViewInit, OnDestroy {
     return this.otpSent() && control.valid;
   });
 
+  ngAfterViewInit(): void {
+    void this.ensureRecaptchaReady();
+  }
+
+  ngOnDestroy(): void {
+    if (this.recaptchaVerifier) {
+      this.recaptchaVerifier.clear();
+      this.recaptchaVerifier = null;
+    }
+    this.recaptchaReady.set(false);
+    this.statusMessage.set('');
+  }
+
+  protected setActiveTab(tab: LoginTab): void {
+    this.activeTab.set(tab);
+    if (tab === 'mobile') {
+      void this.ensureRecaptchaReady();
+    }
+  }
+
+  private async ensureRecaptchaReady(): Promise<void> {
+    if (this.recaptchaReady()) {
+      return;
+    }
+
+    if (this.recaptchaInitPromise) {
+      return this.recaptchaInitPromise;
+    }
+
+    this.recaptchaInitPromise = this.initRecaptcha();
+    try {
+      await this.recaptchaInitPromise;
+    } finally {
+      this.recaptchaInitPromise = null;
+    }
+  }
+
+  private async initRecaptcha(): Promise<void> {
+    if (!document.getElementById('recaptcha-container')) {
+      return;
+    }
+
+    if (!this.recaptchaVerifier) {
+      this.recaptchaVerifier = new RecaptchaVerifier(this.auth, 'recaptcha-container', {
+        size: 'normal'
+      });
+    }
+
+    try {
+      await this.recaptchaVerifier.render();
+      this.recaptchaReady.set(true);
+      this.cdr.markForCheck();
+    } catch (error) {
+      console.error('Failed to render reCAPTCHA:', error);
+      this.recaptchaReady.set(false);
+      this.statusMessage.set('Failed to initialize reCAPTCHA. Disable ad-blockers and refresh.');
+      this.cdr.markForCheck();
+    }
+  }
+
+  protected onCredentialsSubmit(): void {
+    if (this.credentialsForm.invalid) {
+      this.credentialsForm.markAllAsTouched();
+      return;
+    }
+    // Credentials auth will be wired in a follow-up; UI-only for now.
+    this.statusMessage.set('Email sign-in is not available yet. Use Google or mobile OTP.');
+  }
+
+  protected onPhoneInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let value = input.value.replace(/\D/g, '');
+    if (value.length > 10) {
+      value = value.slice(0, 10);
+    }
+    this.phoneForm.controls.phoneNumber.setValue(value);
+  }
+
+  protected changePhoneNumber(): void {
+    this.otpSent.set(false);
+    this.confirmationResult = null;
+    this.phoneForm.controls.otp.reset();
+    this.phoneForm.controls.otp.clearValidators();
+    this.phoneForm.controls.otp.updateValueAndValidity();
+    this.statusMessage.set('');
+  }
+
+  private setOtpValidators(): void {
+    this.phoneForm.controls.otp.setValidators([
+      Validators.required,
+      Validators.minLength(6),
+      Validators.maxLength(6)
+    ]);
+    this.phoneForm.controls.otp.updateValueAndValidity();
+  }
+
   protected loginWithGoogleHandle(): void {
-    this.loginWithGoogle()
-      .then((res) => {
-        console.log('User:', res.user);
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(this.auth, provider)
+      .then(() => {
         void this.router.navigate(['/patients']);
       })
       .catch((err) => {
-        console.error('Error:', err);
+        console.error('Google sign-in failed:', err);
+        this.statusMessage.set('Google sign-in failed. Please try again.');
       });
   }
 
-  private loginWithGoogle() {
-    const provider = new GoogleAuthProvider();
-    return signInWithPopup(this.auth, provider);
-  }
-
-  protected sendOtp(): void {
-    if (!this.recaptchaVerifier) {
-      console.error('reCAPTCHA is not initialized yet.');
-      this.otpStatus.set('reCAPTCHA is not ready yet. Please wait a moment and retry.');
-      return;
-    }
-
-    if (!this.canSendOtp()) {
+  protected async sendOtp(): Promise<void> {
+    if (!this.isPhoneValid()) {
       this.phoneForm.controls.countryCode.markAsTouched();
       this.phoneForm.controls.phoneNumber.markAsTouched();
-      this.otpStatus.set('Enter a valid phone number with selected country code.');
+      this.statusMessage.set('Enter a valid 10-digit phone number with country code.');
       return;
     }
 
-    this.otpStatus.set('Sending OTP...');
+    await this.ensureRecaptchaReady();
+
+    if (!this.recaptchaVerifier || !this.recaptchaReady()) {
+      this.statusMessage.set('reCAPTCHA is not ready yet. Complete the checkbox above and try again.');
+      return;
+    }
+
+    this.statusMessage.set('Sending OTP...');
     const countryCode = this.phoneForm.value.countryCode!;
     const localPhoneNumber = this.phoneForm.value.phoneNumber!.replace(/\D/g, '');
     const phoneNumber = `${countryCode}${localPhoneNumber}`;
 
-    this.loginWithPhoneNumber(phoneNumber)
-      .then(() => {
-        console.log('OTP sent successfully');
+    signInWithPhoneNumber(this.auth, phoneNumber, this.recaptchaVerifier)
+      .then((result) => {
+        this.confirmationResult = result;
         this.otpSent.set(true);
-        this.otpStatus.set(`OTP sent to ${phoneNumber}`);
+        this.setOtpValidators();
+        this.statusMessage.set(`OTP sent to ${phoneNumber}`);
+        this.cdr.markForCheck();
       })
       .catch((error) => {
         console.error('Error sending OTP:', error);
-        this.otpStatus.set(this.getFirebaseErrorMessage(error));
+        this.statusMessage.set(this.getFirebaseErrorMessage(error));
       });
-  }
-
-  private async loginWithPhoneNumber(phoneNumber: string): Promise<void> {
-    try {
-      const result = await signInWithPhoneNumber(this.auth, phoneNumber, this.recaptchaVerifier!);
-      this.confirmationResult = result;
-      console.log('OTP sent successfully');
-    } catch (error) {
-      console.error('Error sending OTP:', error);
-      throw error;
-    }
   }
 
   protected async verifyOtpAndLogin(): Promise<void> {
@@ -187,37 +248,29 @@ export class LoginPage implements AfterViewInit, OnDestroy {
       return;
     }
 
+    if (!this.confirmationResult) {
+      this.statusMessage.set('No OTP confirmation pending. Send OTP first.');
+      return;
+    }
+
     try {
       const otp = this.phoneForm.value.otp!;
-      await this.verifyOtp(otp);
-      console.log('OTP verified, navigating to patients');
-      this.otpStatus.set('OTP verified successfully. Redirecting...');
+      await this.confirmationResult.confirm(otp);
+      this.confirmationResult = null;
+      this.statusMessage.set('OTP verified successfully. Redirecting...');
       void this.router.navigate(['/patients']);
     } catch (error) {
       console.error('OTP verification failed:', error);
       this.phoneForm.controls.otp.reset();
-      this.otpStatus.set(this.getFirebaseErrorMessage(error));
-    }
-  }
-
-  private async verifyOtp(otp: string): Promise<any> {
-    if (!this.confirmationResult) {
-      throw new Error('No OTP confirmation pending. Send OTP first.');
-    }
-    try {
-      const userCredential = await this.confirmationResult.confirm(otp);
-      console.log('OTP verified successfully:', userCredential.user);
-      this.confirmationResult = null;
-      return userCredential;
-    } catch (error) {
-      console.error('Error verifying OTP:', error);
-      throw error;
+      this.statusMessage.set(this.getFirebaseErrorMessage(error));
     }
   }
 
   private getFirebaseErrorMessage(error: unknown): string {
     const code =
-      typeof error === 'object' && error !== null && 'code' in error ? String((error as { code?: string }).code) : '';
+      typeof error === 'object' && error !== null && 'code' in error
+        ? String((error as { code?: string }).code)
+        : '';
 
     switch (code) {
       case 'auth/invalid-phone-number':
