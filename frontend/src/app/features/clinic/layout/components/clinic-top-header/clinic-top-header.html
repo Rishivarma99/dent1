@@ -25,6 +25,17 @@
 
     <button
       type="button"
+      class="clinic-header__icon-button clinic-header__logout"
+      aria-label="Log out"
+      pTooltip="Log out"
+      tooltipPosition="bottom"
+      (click)="onLogout()"
+    >
+      <i class="pi pi-sign-out" aria-hidden="true"></i>
+    </button>
+
+    <button
+      type="button"
       class="clinic-header__profile"
       aria-label="Profile menu"
       [pTooltip]="userName"

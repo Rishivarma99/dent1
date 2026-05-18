@@ -8,7 +8,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { PatientsService, Patient } from '../../api/patients-api.service';
+import { PatientsApiService, Patient } from '../../api/patients-api.service';
 
 @Component({
   selector: 'app-patients-page',
@@ -19,7 +19,7 @@ import { PatientsService, Patient } from '../../api/patients-api.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientsPage implements OnInit {
-  private readonly patientsService = inject(PatientsService);
+  private readonly patientsService = inject(PatientsApiService);
   private readonly messageService = inject(MessageService);
   private readonly fb = inject(FormBuilder);
 

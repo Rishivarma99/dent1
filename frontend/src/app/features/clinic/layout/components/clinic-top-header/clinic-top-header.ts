@@ -1,5 +1,7 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject } from '@angular/core';
 import { TooltipModule } from 'primeng/tooltip';
+import { AuthSessionService } from '../../../../../core/services/auth-session.service';
+import { TokenStorageService } from '../../../../../core/services/token-storage.service';
 
 @Component({
   selector: 'app-header',
@@ -11,9 +13,16 @@ import { TooltipModule } from 'primeng/tooltip';
 export class ClinicTopHeader {
   @Output() readonly openSidebar = new EventEmitter<void>();
 
-  protected readonly userName = 'Dr. Ravi';
+  private readonly authSession = inject(AuthSessionService);
+  private readonly tokenStorage = inject(TokenStorageService);
+
+  protected readonly userName = this.tokenStorage.getRole() ?? 'User';
 
   protected onOpenSidebar(): void {
     this.openSidebar.emit();
+  }
+
+  protected onLogout(): void {
+    this.authSession.logout();
   }
 }

@@ -11,6 +11,11 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
+import { AuthApiService } from '../../api/auth-api.service';
+import { mapAuthResponseDtoToStoredSession } from '../../mappers/auth.mapper';
+import { TokenStorageService } from '../../../../core/services/token-storage.service';
+import { toUserFacingError } from '../../../../shared/utils/api/to-user-facing-error';
 import {
   Auth,
   ConfirmationResult,
@@ -39,6 +44,8 @@ export class LoginPage implements AfterViewInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly auth = inject(Auth);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly authApi = inject(AuthApiService);
+  private readonly tokenStorage = inject(TokenStorageService);
 
   protected readonly currentYear = new Date().getFullYear();
   protected readonly activeTab = signal<LoginTab>('credentials');
@@ -48,6 +55,7 @@ export class LoginPage implements AfterViewInit, OnDestroy {
   private confirmationResult: ConfirmationResult | null = null;
   protected readonly recaptchaReady = signal(false);
   protected readonly statusMessage = signal('');
+  protected readonly isCredentialsSubmitting = signal(false);
   protected readonly otpSent = signal(false);
 
   protected readonly countryCodeOptions = [
@@ -59,7 +67,7 @@ export class LoginPage implements AfterViewInit, OnDestroy {
   ];
 
   protected readonly credentialsForm = this.formBuilder.nonNullable.group({
-    email: ['', [Validators.required]],
+    usernameOrPhone: ['', [Validators.required]],
     password: ['', [Validators.required]]
   });
 
@@ -160,13 +168,35 @@ export class LoginPage implements AfterViewInit, OnDestroy {
     }
   }
 
-  protected onCredentialsSubmit(): void {
+  protected async onCredentialsSubmit(): Promise<void> {
     if (this.credentialsForm.invalid) {
       this.credentialsForm.markAllAsTouched();
       return;
     }
-    // Credentials auth will be wired in a follow-up; UI-only for now.
-    this.statusMessage.set('Email sign-in is not available yet. Use Google or mobile OTP.');
+
+    if (this.isCredentialsSubmitting()) {
+      return;
+    }
+
+    this.isCredentialsSubmitting.set(true);
+    this.statusMessage.set('');
+
+    const { usernameOrPhone, password } = this.credentialsForm.getRawValue();
+
+    try {
+      const response = await firstValueFrom(
+        this.authApi.login({ usernameOrPhone, password })
+      );
+      this.tokenStorage.saveSession(mapAuthResponseDtoToStoredSession(response));
+      this.statusMessage.set('Signed in successfully. Redirecting...');
+      await this.router.navigate(['/patients']);
+    } catch (error) {
+      console.error('Credentials sign-in failed:', error);
+      this.statusMessage.set(toUserFacingError(error));
+    } finally {
+      this.isCredentialsSubmitting.set(false);
+      this.cdr.markForCheck();
+    }
   }
 
   protected onPhoneInput(event: Event): void {

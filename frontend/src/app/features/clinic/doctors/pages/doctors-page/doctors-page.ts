@@ -7,7 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { DoctorsService, Doctor } from '../../api/doctors-api.service';
+import { DoctorsApiService, Doctor } from '../../api/doctors-api.service';
 
 @Component({
   selector: 'app-doctors-page',
@@ -18,7 +18,7 @@ import { DoctorsService, Doctor } from '../../api/doctors-api.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DoctorsPage implements OnInit {
-  private readonly doctorsService = inject(DoctorsService);
+  private readonly doctorsService = inject(DoctorsApiService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly messageService = inject(MessageService);
   private readonly fb = inject(FormBuilder);

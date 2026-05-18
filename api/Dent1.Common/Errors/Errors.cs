@@ -59,6 +59,20 @@ public static class Errors
             StatusCode = 401
         };
 
+        public static readonly ErrorDefinition InvalidCredentials = new()
+        {
+            Code = "INVALID_CREDENTIALS",
+            MessageTemplate = "Invalid username or password",
+            StatusCode = 401
+        };
+
+        public static readonly ErrorDefinition InvalidRefreshToken = new()
+        {
+            Code = "INVALID_REFRESH_TOKEN",
+            MessageTemplate = "Invalid or expired refresh token",
+            StatusCode = 401
+        };
+
         public static readonly ErrorDefinition PermissionDenied = new()
         {
             Code = "PERMISSION_DENIED",

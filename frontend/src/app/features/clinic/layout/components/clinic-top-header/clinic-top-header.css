@@ -74,6 +74,16 @@
   border-radius: var(--radius-md);
   background: transparent;
   color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.clinic-header__icon-button:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.clinic-header__logout:hover {
+  color: var(--color-danger);
 }
 
 .clinic-header__profile {

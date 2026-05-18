@@ -6,5 +6,5 @@ public sealed class AuthResponse
     public string RefreshToken { get; set; } = string.Empty;
     public Guid UserId { get; set; }
     public string Role { get; set; } = string.Empty;
-    public int AccessTokenExpiresInSeconds { get; set; }
+    public DateTime AccessTokenExpiresAtUtc { get; set; }
 }

@@ -91,7 +91,7 @@
                 id="login-email"
                 type="text"
                 class="login-page__input"
-                formControlName="email"
+                formControlName="usernameOrPhone"
                 placeholder="e.g. clinic_admin@dentova.com"
                 autocomplete="username"
               />
@@ -112,8 +112,12 @@
               />
             </div>
 
-            <button type="submit" class="login-page__submit" [disabled]="credentialsForm.invalid">
-              Sign In
+            <button
+              type="submit"
+              class="login-page__submit"
+              [disabled]="credentialsForm.invalid || isCredentialsSubmitting()"
+            >
+              {{ isCredentialsSubmitting() ? 'Signing in...' : 'Sign In' }}
             </button>
           </form>
         }

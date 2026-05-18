@@ -1,6 +1,8 @@
 ﻿using Dent1.Api.Contracts.Requests.Auth;
 using Dent1.Api.Contracts.Responses.Auth;
 using Dent1.Business.Security;
+using Dent1.Common.Errors;
+using Dent1.Common.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,6 +21,7 @@ public class AuthController : ControllerBase
 
     /// <summary>
     /// Login with username and password to get access and refresh tokens.
+    /// Returns ApiResponse&lt;AuthResponse&gt; via the global response filter.
     /// </summary>
     [AllowAnonymous]
     [HttpPost("login")]
@@ -30,21 +33,15 @@ public class AuthController : ControllerBase
 
         if (result is null)
         {
-            return Unauthorized("Invalid credentials.");
+            throw new AppException(Errors.Auth.InvalidCredentials);
         }
 
-        return Ok(new AuthResponse
-        {
-            AccessToken = result.AccessToken,
-            RefreshToken = result.RefreshToken,
-            UserId = result.UserId,
-            Role = result.Role,
-            AccessTokenExpiresInSeconds = result.AccessTokenExpiresInSeconds
-        });
+        return Ok(MapToAuthResponse(result));
     }
 
     /// <summary>
     /// Refresh an expired access token using a valid refresh token.
+    /// Returns ApiResponse&lt;AuthResponse&gt; via the global response filter.
     /// </summary>
     [AllowAnonymous]
     [HttpPost("refresh")]
@@ -56,16 +53,19 @@ public class AuthController : ControllerBase
 
         if (result is null)
         {
-            return Unauthorized("Invalid or expired refresh token.");
+            throw new AppException(Errors.Auth.InvalidRefreshToken);
         }
 
-        return Ok(new AuthResponse
+        return Ok(MapToAuthResponse(result));
+    }
+
+    private static AuthResponse MapToAuthResponse(AuthResult result) =>
+        new()
         {
             AccessToken = result.AccessToken,
             RefreshToken = result.RefreshToken,
             UserId = result.UserId,
             Role = result.Role,
-            AccessTokenExpiresInSeconds = result.AccessTokenExpiresInSeconds
-        });
-    }
+            AccessTokenExpiresAtUtc = result.AccessTokenExpiresAtUtc
+        };
 }

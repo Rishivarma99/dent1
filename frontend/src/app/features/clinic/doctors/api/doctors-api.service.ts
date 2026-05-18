@@ -1,7 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from '../../../../../environment/environment';
+import { ApiResponse } from '../../../../shared/types/api/api-response';
+import { unwrapApiResponse } from '../../../../shared/utils/api/unwrap-api-response';
 
 export interface Doctor {
   id: string;
@@ -9,39 +11,28 @@ export interface Doctor {
   specialty: string;
 }
 
-interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  error: unknown;
-}
-
 @Injectable({ providedIn: 'root' })
-export class DoctorsService {
+export class DoctorsApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/api/doctors`;
 
-  private isApiResponse<T>(value: unknown): value is ApiResponse<T> {
-    return typeof value === 'object' && value !== null && 'data' in value && 'success' in value;
+  getAll(): Observable<Doctor[]> {
+    return this.http
+      .get<ApiResponse<Doctor[]>>(this.baseUrl)
+      .pipe(map(unwrapApiResponse));
   }
 
-  private toArray<T>(value: unknown): T[] {
-    const payload = this.isApiResponse<T[]>(value) ? value.data : value;
-    return Array.isArray(payload) ? payload : [];
+  create(data: { name: string; specialty: string }): Observable<unknown> {
+    return this.http
+      .post<ApiResponse<unknown>>(this.baseUrl, data)
+      .pipe(map(unwrapApiResponse));
   }
 
-  getAll() {
-    return this.http.get<unknown>(this.baseUrl).pipe(map((response) => this.toArray<Doctor>(response)));
+  update(id: string, data: { name: string; specialty: string }): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/${id}`, data);
   }
 
-  create(data: { name: string; specialty: string }) {
-    return this.http.post<string>(this.baseUrl, data);
-  }
-
-  update(id: string, data: { name: string; specialty: string }) {
-    return this.http.put(`${this.baseUrl}/${id}`, data);
-  }
-
-  delete(id: string) {
-    return this.http.delete(`${this.baseUrl}/${id}`);
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 }

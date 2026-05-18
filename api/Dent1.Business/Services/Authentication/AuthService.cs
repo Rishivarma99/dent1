@@ -69,7 +69,7 @@ public class AuthService : IAuthService
             RefreshToken: refreshToken,
             UserId: user.Id,
             Role: user.Role.ToString(),
-            AccessTokenExpiresInSeconds: _jwtTokenService.GetAccessTokenLifetimeMinutes() * 60);
+            AccessTokenExpiresAtUtc: DateTime.UtcNow.AddMinutes(_jwtTokenService.GetAccessTokenLifetimeMinutes()));
     }
 
     public async Task<AuthResult?> RefreshAsync(RefreshSessionRequest request, CancellationToken cancellationToken)
@@ -96,7 +96,7 @@ public class AuthService : IAuthService
             RefreshToken: newRefreshToken,
             UserId: user.Id,
             Role: user.Role.ToString(),
-            AccessTokenExpiresInSeconds: _jwtTokenService.GetAccessTokenLifetimeMinutes() * 60);
+            AccessTokenExpiresAtUtc: DateTime.UtcNow.AddMinutes(_jwtTokenService.GetAccessTokenLifetimeMinutes()));
     }
 
     private static string GenerateRefreshToken()
@@ -126,4 +126,4 @@ public sealed record AuthResult(
     string RefreshToken,
     Guid UserId,
     string Role,
-    int AccessTokenExpiresInSeconds);
+    DateTime AccessTokenExpiresAtUtc);
