@@ -20,3 +20,6 @@
 docker/.env.newrelic
 docker/.env.*.local
 *.env.local
+
+# MCP config may contain API keys
+.cursor/mcp.json

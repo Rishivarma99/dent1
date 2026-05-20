@@ -23,6 +23,14 @@
   box-shadow: var(--shadow-focus);
 }
 
+.app-header-search-input.p-inputtext,
+.app-header-search-input.p-inputtext:hover,
+.app-header-search-input.p-inputtext:enabled:focus {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
 .p-card,
 .p-dialog {
   border: 1px solid var(--color-border-muted);
@@ -55,4 +63,75 @@
 
 .p-datatable .p-datatable-tbody > tr:hover {
   background: var(--color-primary-soft);
+}
+
+.create-appointment-drawer.p-drawer {
+  border-left: 1px solid var(--color-border);
+  box-shadow: -8px 0 32px rgb(22 29 25 / 12%);
+}
+
+.create-appointment-drawer .p-drawer-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0;
+}
+
+.create-appointment-drawer .p-drawer-header {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Header popup profile menu: align overlay with Dentova tokens */
+.app-header-profile-menu.p-menu-overlay {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-muted);
+}
+
+.app-header-profile-menu .p-menu-item-label,
+.app-header-profile-menu .p-menu-item-icon {
+  font-size: var(--font-size-xs);
+}
+
+.app-header-profile-menu .p-menu-item:not(.p-disabled):not(.app-header-profile-menu-logout) .p-menu-item-content {
+  color: var(--color-text-muted);
+}
+
+.app-header-profile-menu .p-menu-item:not(.p-disabled):not(.app-header-profile-menu-logout) .p-menu-item-icon {
+  color: var(--color-text-muted);
+}
+
+.app-header-profile-menu .p-menu-item:not(.p-disabled):not(.app-header-profile-menu-logout) .p-menu-item-content:hover {
+  color: var(--color-text-muted);
+  background: var(--color-surface-container);
+}
+
+.app-header-profile-menu .p-menu-item:not(.p-disabled):not(.app-header-profile-menu-logout) .p-menu-item-content:hover .p-menu-item-icon {
+  color: var(--color-text-muted);
+}
+
+.app-header-profile-menu .p-menu-item.app-header-profile-menu-logout:not(.p-disabled) .p-menu-item-content {
+  color: var(--color-danger);
+}
+
+.app-header-profile-menu .p-menu-item.app-header-profile-menu-logout:not(.p-disabled) .p-menu-item-icon {
+  color: var(--color-danger);
+}
+
+.app-header-profile-menu .p-menu-item.app-header-profile-menu-logout:not(.p-disabled) .p-menu-item-content:hover {
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
+}
+
+.app-header-profile-menu .p-menu-item.app-header-profile-menu-logout:not(.p-disabled) .p-menu-item-content:hover .p-menu-item-icon {
+  color: var(--color-danger);
+}
+
+@media (min-width: 640px) {
+  .app-header-profile-menu .p-menu-item-label,
+  .app-header-profile-menu .p-menu-item-icon {
+    font-size: var(--font-size-sm);
+  }
 }

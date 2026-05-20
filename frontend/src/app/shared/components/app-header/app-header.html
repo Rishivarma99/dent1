@@ -1,0 +1,161 @@
+<header class="flex h-full shrink-0 items-center border-b border-border-muted bg-surface px-4 py-3 sm:px-8">
+  <div class="flex w-full max-w-full items-center justify-between">
+    <p-button
+      icon="pi pi-bars"
+      [text]="true"
+      severity="secondary"
+      class="mr-2 sm:hidden"
+      styleClass="!size-10"
+      ariaLabel="Open sidebar"
+      (onClick)="onOpenSidebar()"
+    />
+
+    <nav class="flex min-w-0 flex-1 items-center gap-2" aria-label="Breadcrumb">
+      <i class="pi pi-home shrink-0 text-sm text-text-placeholder" aria-hidden="true"></i>
+
+      @for (crumb of breadcrumbs(); track crumb.path; let index = $index; let last = $last) {
+        <div class="flex min-w-0 items-center gap-2">
+          @if (index > 0) {
+            <i class="pi pi-chevron-right shrink-0 text-xs text-text-placeholder" aria-hidden="true"></i>
+          }
+
+          @if (last) {
+            <span class="truncate text-sm font-semibold text-text-strong">
+              {{ crumb.label }}
+            </span>
+          } @else {
+            <a
+              [routerLink]="crumb.path"
+              class="truncate text-sm text-text-subtle transition-colors hover:text-text-strong"
+            >
+              {{ crumb.label }}
+            </a>
+          }
+        </div>
+      }
+    </nav>
+
+    <div class="ml-4 flex items-center gap-6">
+      <div
+        #searchRef
+        class="relative hidden items-center lg:flex"
+        (mouseenter)="onSearchMouseEnter()"
+      >
+        <div
+          class="flex items-center overflow-hidden rounded-lg bg-surface-container transition-all duration-300 ease-in-out"
+          [class]="searchExpanded() ? 'w-80' : 'w-10'"
+        >
+          <div class="flex size-10 shrink-0 items-center justify-center">
+            <i class="pi pi-search text-sm text-text-subtle" aria-hidden="true"></i>
+          </div>
+
+          @if (searchExpanded()) {
+            <input
+              pInputText
+              type="search"
+              placeholder="Search patients, records..."
+              class="app-header-search-input min-h-10 min-w-0 flex-1 outline-none placeholder:text-text-placeholder"
+              (focus)="searchExpanded.set(true)"
+            />
+          }
+        </div>
+      </div>
+
+      <div class="hidden items-center gap-2 sm:flex">
+        <p-button
+          [text]="true"
+          [rounded]="true"
+          severity="secondary"
+          styleClass="!size-10"
+          ariaLabel="Help"
+          pTooltip="Help"
+          tooltipPosition="bottom"
+        >
+          <ng-template pTemplate="content">
+            <i class="pi pi-question-circle text-lg" aria-hidden="true"></i>
+          </ng-template>
+        </p-button>
+
+        <p-button
+          [text]="true"
+          [rounded]="true"
+          severity="secondary"
+          styleClass="!relative !size-10"
+          ariaLabel="Notifications"
+          pTooltip="Notifications"
+          tooltipPosition="bottom"
+        >
+          <ng-template pTemplate="content">
+            <i class="pi pi-bell text-lg" aria-hidden="true"></i>
+            <span
+              class="pointer-events-none absolute right-2 top-2 size-2 rounded-full border-2 border-surface bg-danger"
+              aria-hidden="true"
+            ></span>
+          </ng-template>
+        </p-button>
+
+        <p-button
+          [text]="true"
+          [rounded]="true"
+          severity="secondary"
+          styleClass="!size-10"
+          [attr.aria-label]="themeService.theme() === 'light' ? 'Switch to dark mode' : 'Switch to light mode'"
+          [pTooltip]="themeService.theme() === 'light' ? 'Dark mode' : 'Light mode'"
+          tooltipPosition="bottom"
+          (onClick)="themeService.toggleTheme()"
+        >
+          <ng-template pTemplate="content">
+            @if (themeService.theme() === 'light') {
+              <i class="pi pi-moon text-lg" aria-hidden="true"></i>
+            } @else {
+              <i class="pi pi-sun text-lg" aria-hidden="true"></i>
+            }
+          </ng-template>
+        </p-button>
+      </div>
+
+      <div class="hidden h-8 w-px bg-border-muted sm:block" aria-hidden="true"></div>
+
+      <div class="relative shrink-0">
+        <p-menu
+          #profileMenu
+          [model]="profileMenuModel()"
+          [popup]="true"
+          appendTo="body"
+          styleClass="app-header-profile-menu mt-2 min-w-56 rounded-lg border border-border-muted shadow-dialog"
+        >
+          <ng-template pTemplate="start">
+            <div class="border-b border-border-muted px-4 py-3">
+              <p class="text-sm font-semibold text-text-strong">{{ userName() }}</p>
+              <p class="text-xs text-text-subtle">{{ userEmail }}</p>
+              <p class="mt-1 text-xs font-medium text-primary">{{ clinicName }}</p>
+            </div>
+          </ng-template>
+        </p-menu>
+
+        <!-- button to trigger the dropdown or menu  -->
+        <p-button   
+          [text]="true"
+          severity="secondary"
+          styleClass="!gap-3 !rounded-lg !px-2 !py-1"
+          ariaLabel="Account menu"
+          aria-haspopup="menu"
+          (onClick)="onProfileMenuToggle($event)"
+        >
+          <ng-template pTemplate="content">
+            <div class="hidden flex-col items-end sm:flex">
+              <span class="text-xs font-semibold text-text-strong">{{ userName() }}</span>
+              <span class="text-xs text-text-muted">{{ userTitle() }}</span>
+            </div>
+            <img
+              [src]="avatarUrl"
+              [alt]="userName()"
+              class="size-9 rounded-full object-cover ring-2 ring-primary/10"
+            />
+          </ng-template>
+        </p-button>
+
+      </div>
+    </div>
+  </div>
+</header>

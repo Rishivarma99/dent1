@@ -1,0 +1,206 @@
+<p-drawer
+  [(visible)]="visible"
+  position="right"
+  [modal]="true"
+  [blockScroll]="true"
+  [dismissible]="true"
+  [closable]="false"
+  styleClass="create-appointment-drawer"
+  [style]="{ width: 'min(100vw, 28.75rem)' }"
+  (onHide)="onHide()"
+>
+  <ng-template #header>
+    <div class="flex w-full items-center justify-between gap-4 border-b border-[var(--appt-outline-variant)] bg-[var(--appt-surface-lowest)] px-6 py-4">
+      <div>
+        <h2 class="m-0 text-2xl font-bold leading-8 tracking-tight text-[var(--appt-on-surface)]">
+          Create Appointment
+        </h2>
+        <p class="mt-1 text-xs text-[var(--appt-on-surface-variant)]">
+          Booking for {{ bookingPatientName() }}
+        </p>
+      </div>
+      <button
+        type="button"
+        class="rounded-full p-1 text-[var(--appt-outline)] transition-colors hover:bg-[var(--appt-surface-container)]"
+        aria-label="Close create appointment drawer"
+        (click)="close()"
+      >
+        <i class="pi pi-times" aria-hidden="true"></i>
+      </button>
+    </div>
+  </ng-template>
+
+  <form class="flex min-h-0 flex-1 flex-col" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="flex-1 space-y-8 overflow-y-auto px-6 py-8">
+      <section class="space-y-2">
+        <span class="block text-xs font-bold tracking-wide text-[var(--appt-on-surface-variant)]">Patient</span>
+
+        <div class="space-y-4">
+          <span class="relative block">
+            <i
+              class="pi pi-search pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--appt-outline)]"
+              aria-hidden="true"
+            ></i>
+            <input
+              pInputText
+              type="search"
+              formControlName="patientSearch"
+              placeholder="Search by name, phone, or ID..."
+              class="w-full pl-10"
+            />
+          </span>
+
+          <div
+            class="flex items-center rounded-lg border border-[color-mix(in_srgb,var(--appt-primary)_20%,transparent)] bg-[color-mix(in_srgb,var(--appt-primary-container)_10%,transparent)] p-4"
+          >
+            <div
+              class="mr-4 flex h-10 w-10 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--appt-primary)_10%,transparent)]"
+            >
+              <i class="pi pi-user text-[var(--appt-primary)]" aria-hidden="true"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="m-0 text-base font-semibold text-[var(--appt-on-surface)]">{{ selectedPatient.name }}</p>
+              <p class="m-0 text-xs text-[var(--appt-on-surface-variant)]">{{ selectedPatient.meta }}</p>
+            </div>
+            <button
+              type="button"
+              class="flex items-center gap-1 text-xs font-bold text-[var(--appt-primary)] transition-colors hover:text-[var(--appt-primary-container)]"
+            >
+              <i class="pi pi-sync text-sm" aria-hidden="true"></i>
+              Change
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <label class="block text-xs font-bold text-[var(--appt-on-surface-variant)]" for="appt-doctor">Doctor</label>
+            <p-select
+              inputId="appt-doctor"
+              formControlName="doctor"
+              [options]="doctorOptions"
+              optionLabel="label"
+              optionValue="value"
+              styleClass="w-full"
+            />
+          </div>
+
+          <div class="space-y-1">
+            <label class="block text-xs font-bold text-[var(--appt-on-surface-variant)]" for="appt-date">Date</label>
+            <input id="appt-date" type="date" formControlName="date" class="appt-field w-full" />
+          </div>
+
+          <div class="space-y-1">
+            <label class="block text-xs font-bold text-[var(--appt-on-surface-variant)]" for="appt-time">Arrival Time</label>
+            <input id="appt-time" type="time" formControlName="arrivalTime" class="appt-field w-full" />
+          </div>
+
+          <div class="space-y-1">
+            <span class="block text-xs font-bold text-[var(--appt-on-surface-variant)]">Type</span>
+            <div class="flex gap-1 rounded-lg bg-[var(--appt-surface-container)] p-1">
+              <button
+                type="button"
+                class="flex-1 rounded-md px-2 py-1.5 text-xs font-bold transition-colors"
+                [class.appt-type-active]="appointmentType === 'new'"
+                [class.text-[var(--appt-on-surface-variant)]]="appointmentType !== 'new'"
+                (click)="setAppointmentType('new')"
+              >
+                New
+              </button>
+              <button
+                type="button"
+                class="flex-1 rounded-md px-2 py-1.5 text-xs font-bold transition-colors"
+                [class.appt-type-active]="appointmentType === 'follow-up'"
+                [class.text-[var(--appt-on-surface-variant)]]="appointmentType !== 'follow-up'"
+                (click)="setAppointmentType('follow-up')"
+              >
+                Follow-up
+              </button>
+            </div>
+          </div>
+        </div>
+
+        @if (appointmentType === 'follow-up') {
+          <div class="space-y-1">
+            <label class="block text-xs font-bold text-[var(--appt-on-surface-variant)]" for="appt-treatment">
+              Linked Treatment
+              <span class="ml-1 font-normal text-[var(--appt-outline)]">(Required for Follow-up)</span>
+            </label>
+            <p-select
+              inputId="appt-treatment"
+              formControlName="linkedTreatment"
+              [options]="treatmentOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Select linked treatment"
+              styleClass="w-full"
+            />
+          </div>
+        }
+      </section>
+
+      <section class="space-y-2 rounded-xl border border-[var(--appt-surface-variant)] bg-[var(--appt-surface)] p-4">
+        <h3 class="m-0 text-xs font-bold uppercase tracking-wider text-[var(--appt-on-surface-variant)]">
+          Appointments on Selected Day
+        </h3>
+        <ul class="appt-day-list max-h-40 space-y-1 overflow-y-auto pr-2">
+          @for (slot of dayAppointments; track slot.time) {
+            <li
+              class="flex items-center gap-4 rounded-md px-2 py-1.5 transition-colors"
+              [class.appt-slot-current]="slot.variant === 'current'"
+              [class.hover:bg-[var(--appt-surface-container)]]="slot.variant === 'default'"
+            >
+              <span
+                class="w-14 text-[11px] font-extrabold uppercase tracking-wide"
+                [class.text-[var(--appt-primary)]]="slot.variant === 'current'"
+                [class.text-[var(--appt-on-surface-variant)]]="slot.variant !== 'current'"
+              >
+                {{ slot.time }}
+              </span>
+              <span class="h-3 w-px bg-[var(--appt-outline-variant)]" aria-hidden="true"></span>
+              <span
+                class="text-sm"
+                [class.font-semibold]="slot.variant === 'current'"
+                [class.text-[var(--appt-primary)]]="slot.variant === 'current'"
+                [class.text-[var(--appt-on-surface)]]="slot.variant === 'default'"
+                [class.italic]="slot.variant === 'available'"
+                [class.text-[var(--appt-outline)]]="slot.variant === 'available'"
+              >
+                {{ slot.label }}
+              </span>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <section class="space-y-1">
+        <label class="block text-xs font-bold text-[var(--appt-on-surface-variant)]" for="appt-notes">Additional Notes</label>
+        <textarea
+          pTextarea
+          id="appt-notes"
+          formControlName="notes"
+          rows="2"
+          placeholder="Add brief notes..."
+          class="w-full resize-none"
+        ></textarea>
+      </section>
+    </div>
+
+    <div
+      class="sticky bottom-0 z-10 flex gap-4 border-t border-[var(--appt-outline-variant)] bg-[var(--appt-surface-lowest)] px-6 py-4"
+    >
+      <button
+        pButton
+        type="button"
+        label="Cancel"
+        severity="secondary"
+        [outlined]="true"
+        class="flex-1"
+        (click)="close()"
+      ></button>
+      <button pButton type="submit" label="Create Appointment" class="flex-[2]" [disabled]="form.invalid"></button>
+    </div>
+  </form>
+</p-drawer>

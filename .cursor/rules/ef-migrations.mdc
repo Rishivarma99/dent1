@@ -1,0 +1,29 @@
+---
+description: Protect EF Core migrations — never edit existing files; ask before creating new ones
+alwaysApply: true
+---
+
+# EF Core migrations (mandatory)
+
+Applies to all files under `api/**/Migrations/`, including `*Migration*.cs`, `*.Designer.cs`, and `*ModelSnapshot.cs`.
+
+## Never modify existing migrations
+
+- Do **not** edit, rename, delete, or regenerate any existing migration file or the model snapshot.
+- Do **not** run commands that rewrite migrations (for example `dotnet ef migrations remove`, editing `Up`/`Down`, or hand-editing generated migration code).
+- If a schema change is needed, prefer updating the entity model (`DentContext`, configurations, entities) and explain what changed — do **not** apply migration file changes unless the user explicitly approves.
+
+## New migrations require explicit permission
+
+- Do **not** create a new migration file or run `dotnet ef migrations add` unless the user has clearly asked for it in the current conversation.
+- Before proposing or running a new migration, ask the user for permission and state:
+  - why a new migration is needed
+  - the intended migration name
+  - that existing migration files will remain untouched
+- Wait for explicit approval before creating files or running migration commands.
+
+## Allowed without asking
+
+- Reading migration files for context
+- Explaining migration history or schema
+- Suggesting entity/model changes that would *later* require a migration (without generating files)

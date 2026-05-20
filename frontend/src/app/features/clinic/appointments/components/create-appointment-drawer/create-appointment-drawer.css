@@ -1,0 +1,50 @@
+:host {
+  --appt-primary: #006c49;
+  --appt-primary-container: #1fb981;
+  --appt-on-primary: #ffffff;
+  --appt-on-surface: #161d19;
+  --appt-on-surface-variant: #3d4a42;
+  --appt-outline: #6c7a71;
+  --appt-outline-variant: #bbcabf;
+  --appt-surface: #f4fbf4;
+  --appt-surface-container: #e9f0e9;
+  --appt-surface-lowest: #ffffff;
+  --appt-surface-variant: #dde4dd;
+}
+
+.appt-field {
+  border: 1px solid var(--appt-outline-variant);
+  border-radius: 0.5rem;
+  background: var(--appt-surface-lowest);
+  color: var(--appt-on-surface);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.appt-field:focus {
+  border-color: var(--appt-primary);
+  outline: 1px solid var(--appt-primary);
+  outline-offset: 0;
+}
+
+.appt-type-active {
+  background: var(--appt-surface-lowest);
+  border: 1px solid color-mix(in srgb, var(--appt-outline-variant) 20%, transparent);
+  box-shadow: 0 1px 2px rgb(22 29 25 / 8%);
+  color: var(--appt-on-surface);
+}
+
+.appt-slot-current {
+  border: 1px solid color-mix(in srgb, var(--appt-primary) 20%, transparent);
+  background: color-mix(in srgb, var(--appt-primary) 5%, transparent);
+}
+
+.appt-day-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.appt-day-list::-webkit-scrollbar-thumb {
+  background-color: var(--appt-outline-variant);
+  border-radius: 10px;
+}

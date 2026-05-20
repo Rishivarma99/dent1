@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { CreateAppointmentDrawer } from '../../../appointments/components/create-appointment-drawer/create-appointment-drawer';
 import { ButtonModule } from 'primeng/button';
 
 type QueueStatus = 'completed' | 'in-progress' | 'arrived' | 'scheduled';
@@ -40,9 +41,10 @@ interface ActivityItem {
   icon: string;
 }
 
+
 @Component({
   selector: 'app-dashboard-page',
-  imports: [ButtonModule],
+  imports: [ButtonModule, CreateAppointmentDrawer],
   templateUrl: './dashboard-page.html',
   styleUrl: './dashboard-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -197,6 +199,12 @@ export class DashboardPage {
     }
   }
 
+  protected readonly createAppointmentDrawerOpen = signal(false);
+
+  protected goToDoctors(): void {
+    void this.router.navigate(['/doctors']);
+  }
+
   protected queueStatusIcon(status: QueueStatus): string {
     switch (status) {
       case 'completed':
@@ -274,5 +282,9 @@ export class DashboardPage {
 
   protected viewAllAppointments(): void {
     void this.router.navigate(['/patients']);
+  }
+
+  protected openCreateAppointmentDrawer(): void {
+    this.createAppointmentDrawerOpen.set(true);
   }
 }
