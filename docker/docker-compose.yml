@@ -16,7 +16,7 @@ services:
       - ../.env
       - .env.newrelic
     environment:
-      ConnectionStrings__DefaultConnection: "Data Source=host.docker.internal\\SQLEXPRESS;Database=Dent1;User Id=${SQL_SERVER_USER};Password=${SQL_SERVER_PASSWORD};TrustServerCertificate=True;Encrypt=False;MultipleActiveResultSets=True;"
+      ConnectionStrings__DefaultConnection: "Host=${POSTGRES_HOST:-host.docker.internal};Port=${POSTGRES_PORT:-5432};Database=${POSTGRES_DB:-Dent1};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD}"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:

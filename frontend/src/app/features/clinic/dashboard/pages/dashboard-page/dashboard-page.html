@@ -1,17 +1,207 @@
-<section class="dashboard-shell">
-  <p-card styleClass="dashboard-card">
-    <ng-template #title>
-      <h1>Clinic Dashboard</h1>
-    </ng-template>
+<section class="flex flex-col gap-6 bg-background p-4 text-text sm:p-6 lg:p-8">
+  <header>
+    <h1 class="text-2xl font-bold text-text-strong sm:text-3xl">Dashboard</h1>
+    <p class="mt-1 text-sm text-text-subtle">
+      Overview of today's activities and pending tasks
+    </p>
+  </header>
 
-    <p>Select an area to continue.</p>
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+    <article class="rounded-xl border border-border-muted bg-surface p-6 shadow-card transition-shadow hover:shadow-card-hover">
+      <div class="flex size-12 items-center justify-center rounded-lg bg-info-soft text-info">
+        <i class="pi pi-users text-2xl" aria-hidden="true"></i>
+      </div>
+      <p class="mt-4 text-sm text-text-subtle">Total Patients</p>
+      <p class="mt-1 text-3xl font-bold text-text-strong">1,248</p>
+      <p class="mt-2 text-xs text-text-placeholder">+12% from last month</p>
+    </article>
 
-    <div class="dashboard-actions">
-      <button pButton type="button" icon="pi pi-user-md" label="Manage Doctors" (click)="goToDoctors()"></button>
+    <article class="rounded-xl border border-border-muted bg-surface p-6 shadow-card transition-shadow hover:shadow-card-hover">
+      <div class="flex size-12 items-center justify-center rounded-lg bg-primary-soft text-primary">
+        <i class="pi pi-calendar text-2xl" aria-hidden="true"></i>
+      </div>
+      <p class="mt-4 text-sm text-text-subtle">Today's Appointments</p>
+      <p class="mt-1 text-3xl font-bold text-text-strong">24</p>
+      <p class="mt-2 text-xs text-text-placeholder">6 completed</p>
+    </article>
 
-      <button pButton type="button" icon="pi pi-users" severity="secondary" label="Manage Patients" (click)="goToPatients()"></button>
+    <article class="rounded-xl border border-border-muted bg-surface p-6 shadow-card transition-shadow hover:shadow-card-hover">
+      <div class="flex size-12 items-center justify-center rounded-lg bg-warning-soft text-warning">
+        <i class="pi pi-clock text-2xl" aria-hidden="true"></i>
+      </div>
+      <p class="mt-4 text-sm text-text-subtle">In Queue</p>
+      <p class="mt-1 text-3xl font-bold text-text-strong">8</p>
+      <p class="mt-2 text-xs text-text-placeholder">3 in progress</p>
+    </article>
 
-      <button pButton type="button" icon="pi pi-arrow-left" severity="contrast" label="Back to Login" (click)="goToLogin()"></button>
+    <article class="rounded-xl border border-border-muted bg-surface p-6 shadow-card transition-shadow hover:shadow-card-hover">
+      <div class="flex size-12 items-center justify-center rounded-lg bg-danger-soft text-danger">
+        <i class="pi pi-exclamation-circle text-2xl" aria-hidden="true"></i>
+      </div>
+      <p class="mt-4 text-sm text-text-subtle">Pending Follow-ups</p>
+      <p class="mt-1 text-3xl font-bold text-text-strong">12</p>
+      <p class="mt-2 text-xs text-text-placeholder">Needs attention</p>
+    </article>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <div class="flex flex-col gap-6 lg:col-span-2">
+      <article class="rounded-xl border border-border-muted bg-surface shadow-card">
+        <div class="flex items-center justify-between border-b border-border-muted p-6">
+          <div>
+            <h2 class="text-lg font-bold text-text-strong">Today's Queue</h2>
+            <p class="mt-0.5 text-sm text-text-subtle">Real-time patient queue status</p>
+          </div>
+          <span class="rounded-full bg-primary-soft px-3 py-1 text-xs font-bold text-primary">
+            {{ queueItems.length }} PATIENTS
+          </span>
+        </div>
+
+        <div class="divide-y divide-border-muted">
+          @for (item of queueItems; track item.id) {
+            <div class="p-4 transition-colors hover:bg-surface-low">
+              <div class="flex items-center justify-between gap-4">
+                <div class="flex min-w-0 flex-1 items-center gap-4">
+                  <div [class]="queueStatusIconClass(item.status)">
+                    <i [class]="queueStatusIcon(item.status) + ' text-xl'" aria-hidden="true"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <p class="truncate font-semibold text-text-strong">{{ item.name }}</p>
+                    <p class="text-sm text-text-subtle">{{ item.service }}</p>
+                  </div>
+                  <div class="shrink-0 text-right">
+                    <p class="text-sm font-medium text-text-strong">{{ item.time }}</p>
+                    <span [class]="queueStatusBadgeClass(item.status)">
+                      {{ queueStatusLabel(item.status) }}
+                    </span>
+                  </div>
+                </div>
+                @if (item.status === 'arrived') {
+                  <button
+                    pButton
+                    type="button"
+                    label="Start Visit"
+                    class="shrink-0 whitespace-nowrap"
+                    (click)="startVisit(item.appointmentId)"
+                  ></button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </article>
+
+      <article class="rounded-xl border border-border-muted bg-surface shadow-card">
+        <div class="flex items-center justify-between border-b border-border-muted p-6">
+          <div>
+            <h2 class="text-lg font-bold text-text-strong">Upcoming Appointments</h2>
+            <p class="mt-0.5 text-sm text-text-subtle">Scheduled for later today</p>
+          </div>
+          <button
+            pButton
+            type="button"
+            label="View All"
+            [text]="true"
+            class="text-sm font-semibold text-primary"
+            (click)="viewAllAppointments()"
+          ></button>
+        </div>
+
+        <div class="divide-y divide-border-muted">
+          @for (appt of upcomingAppointments; track appt.id) {
+            <div class="p-4 transition-colors hover:bg-surface-low">
+              <div class="flex items-center justify-between gap-4">
+                <div class="flex min-w-0 flex-1 items-center gap-4">
+                  <div
+                    class="flex size-10 shrink-0 items-center justify-center rounded-full bg-warning-soft text-warning"
+                  >
+                    <i class="pi pi-calendar text-xl" aria-hidden="true"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <p class="truncate font-semibold text-text-strong">{{ appt.name }}</p>
+                    <p class="text-sm text-text-subtle">{{ appt.service }}</p>
+                  </div>
+                  <div class="shrink-0 text-right">
+                    <p class="flex items-center justify-end gap-1 text-sm font-medium text-text-strong">
+                      <i class="pi pi-clock text-base" aria-hidden="true"></i>
+                      {{ appt.time }}
+                    </p>
+                    <p class="text-xs text-text-subtle">{{ appt.doctor }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </article>
     </div>
-  </p-card>
+
+    <div class="flex flex-col gap-6">
+      <article class="rounded-xl border border-border-muted bg-surface shadow-card">
+        <div class="flex items-center justify-between border-b border-border-muted p-6">
+          <div>
+            <h2 class="text-lg font-bold text-text-strong">Pending Follow-ups</h2>
+            <p class="mt-0.5 text-sm text-text-subtle">Requires scheduling</p>
+          </div>
+          <span class="rounded-full bg-danger-soft px-3 py-1 text-xs font-bold text-danger">
+            {{ followUps.length }}
+          </span>
+        </div>
+
+        <div class="max-h-96 divide-y divide-border-muted overflow-y-auto">
+          @for (item of followUps; track item.id) {
+            <div class="p-4 transition-colors hover:bg-surface-low">
+              <div class="flex items-start gap-3">
+                <div [class]="followUpIconClass(item.type)">
+                  <i [class]="followUpIcon(item.type) + ' text-xl'" aria-hidden="true"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="truncate font-semibold text-text-strong">{{ item.name }}</p>
+                  <p class="text-sm text-text-subtle">{{ item.reason }}</p>
+                  <div class="mt-1 flex items-center gap-2">
+                    <span [class]="followUpBadgeClass(item.type)">{{ item.type }}</span>
+                    <span class="text-xs text-text-subtle">{{ item.days }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="border-t border-border-muted p-4">
+          <button
+            pButton
+            type="button"
+            label="Schedule Follow-ups"
+            class="w-full justify-center"
+            (click)="scheduleFollowUps()"
+          ></button>
+        </div>
+      </article>
+
+      <article class="rounded-xl border border-border-muted bg-surface shadow-card">
+        <div class="border-b border-border-muted p-6">
+          <h2 class="text-lg font-bold text-text-strong">Recent Activity</h2>
+          <p class="mt-0.5 text-sm text-text-subtle">Latest updates</p>
+        </div>
+
+        <div class="max-h-96 divide-y divide-border-muted overflow-y-auto">
+          @for (activity of activities; track activity.id) {
+            <div class="p-4 transition-colors hover:bg-surface-low">
+              <div class="flex items-start gap-3">
+                <div [class]="activityIconClass(activity.type)">
+                  <i [class]="activity.icon + ' text-xl'" aria-hidden="true"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm font-semibold text-text-strong">{{ activity.title }}</p>
+                  <p class="truncate text-sm text-text-subtle">{{ activity.description }}</p>
+                  <p class="mt-1 text-xs text-text-subtle">{{ activity.time }}</p>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </article>
+    </div>
+  </div>
 </section>

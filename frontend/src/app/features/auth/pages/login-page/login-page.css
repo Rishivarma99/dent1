@@ -347,19 +347,6 @@
   color: var(--color-primary-hover);
 }
 
-.login-page__link--button {
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  font-size: 0.75rem;
-}
-
-.login-page__link--button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 .login-page__submit {
   width: 100%;
   margin-top: 0.25rem;

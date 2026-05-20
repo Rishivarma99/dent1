@@ -24,6 +24,7 @@ import {
   signInWithPhoneNumber,
   signInWithPopup
 } from '@angular/fire/auth';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ButtonModule } from 'primeng/button';
 import { InputOtpModule } from 'primeng/inputotp';
 import { InputTextModule } from 'primeng/inputtext';
@@ -49,6 +50,7 @@ export class LoginPage implements AfterViewInit, OnDestroy {
 
   protected readonly currentYear = new Date().getFullYear();
   protected readonly activeTab = signal<LoginTab>('credentials');
+  protected readonly isSubmittingCredentials = signal(false);
 
   private recaptchaVerifier: RecaptchaVerifier | null = null;
   private recaptchaInitPromise: Promise<void> | null = null;

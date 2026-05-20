@@ -2,4 +2,16 @@
   --ag-border-color: var(--color-border);
   --ag-foreground-color: var(--color-text);
   --ag-background-color: var(--color-surface);
+  --ag-header-background-color: var(--color-surface-low);
+  --ag-odd-row-background-color: var(--color-surface);
+  --ag-row-hover-color: var(--color-primary-soft);
+  --ag-selected-row-background-color: color-mix(in srgb, var(--color-primary) 14%, transparent);
+  --ag-accent-color: var(--color-primary);
+  --ag-font-family: var(--font-family-ui);
+  --ag-font-size: var(--font-size-sm);
+  --ag-border-radius: var(--radius-lg);
+  --ag-wrapper-border-radius: var(--radius-xl);
+  --ag-grid-size: 0.5rem;
+  --ag-header-height: 3rem;
+  --ag-row-height: 3.5rem;
 }

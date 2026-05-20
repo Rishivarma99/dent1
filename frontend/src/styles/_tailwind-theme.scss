@@ -1,42 +1,4 @@
-:root {
-  --dent-color-primary: #006c49;
-  --dent-color-primary-hover: #008f7a;
-  --dent-color-primary-active: #005236;
-  --dent-color-primary-container: #1fb981;
-  --dent-color-primary-fixed: #73fbbd;
-  --dent-color-primary-highlight: #53dea3;
-  --dent-color-primary-soft: #f0fdfb;
-  --dent-color-primary-foreground: #ffffff;
-  --dent-color-on-primary-container: #00422b;
-
-  --dent-color-secondary: #396850;
-  --dent-color-secondary-container: #b8ebce;
-  --dent-color-secondary-soft: #bbeed0;
-
-  --dent-color-background: #f8fafc;
-  --dent-color-surface: #ffffff;
-  --dent-color-surface-muted: #f4fbf4;
-  --dent-color-surface-low: #eef5ee;
-  --dent-color-surface-container: #e9f0e9;
-  --dent-color-surface-high: #e3eae3;
-  --dent-color-border: #bbcabf;
-  --dent-color-border-muted: #e2e8f0;
-
-  --dent-color-text: #161d19;
-  --dent-color-text-strong: #191c1d;
-  --dent-color-text-muted: #3d4a42;
-  --dent-color-text-subtle: #6d7a75;
-  --dent-color-text-placeholder: #94a3b8;
-
-  --dent-color-danger: #ba1a1a;
-  --dent-color-danger-soft: #ffdad6;
-  --dent-color-success: #16a34a;
-  --dent-color-success-soft: #dcfce7;
-  --dent-color-warning: #d97706;
-  --dent-color-warning-soft: #fef3c7;
-  --dent-color-info: #2563eb;
-  --dent-color-info-soft: #dbeafe;
-
+@theme inline {
   --color-primary: var(--dent-color-primary);
   --color-primary-hover: var(--dent-color-primary-hover);
   --color-primary-active: var(--dent-color-primary-active);
@@ -74,4 +36,19 @@
   --color-warning-soft: var(--dent-color-warning-soft);
   --color-info: var(--dent-color-info);
   --color-info-soft: var(--dent-color-info-soft);
+
+  --font-ui: var(--font-family-ui);
+  --font-brand: var(--font-family-brand);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-card-hover: var(--shadow-card-hover);
+  --shadow-dialog: var(--shadow-dialog);
+  --shadow-focus: var(--shadow-focus);
+
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-full: var(--radius-full);
 }

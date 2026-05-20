@@ -13,7 +13,7 @@ public static class DataBootstrapper
     {
         services.AddDbContext<DentContext>(options =>
             options
-                .UseSqlServer(connectionString)
+                .UseConfiguredDatabase(connectionString)
                 .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)));
 
         services.AddScoped<IPatientRepository, PatientRepository>();

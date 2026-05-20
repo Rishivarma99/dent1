@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
 namespace Dent1.Data;
 
@@ -7,11 +8,17 @@ public class DentContextFactory : IDesignTimeDbContextFactory<DentContext>
 {
     public DentContext CreateDbContext(string[] args)
     {
-        var connectionString = Environment.GetEnvironmentVariable("DENT1_CONNECTION")
-            ?? "Data Source=DESKTOP-BDENLBT\\SQLEXPRESS;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=True;Application Name=\"SQL Server Management Studio\";Command Timeout=0";
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "Dent1.Api"))
+            .AddJsonFile("appsettings.json")
+            .AddJsonFile("appsettings.Development.json", optional: true)
+            .Build();
+
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException("DefaultConnection is missing.");
 
         var optionsBuilder = new DbContextOptionsBuilder<DentContext>();
-        optionsBuilder.UseSqlServer(connectionString);
+        optionsBuilder.UseConfiguredDatabase(connectionString);
 
         return new DentContext(optionsBuilder.Options);
     }

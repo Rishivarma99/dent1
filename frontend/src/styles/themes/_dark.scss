@@ -1,9 +1,32 @@
 [data-theme='dark'] {
   color-scheme: dark;
 
-  --color-surface: #0f172a;
-  --color-surface-muted: #1e293b;
-  --color-border: #334155;
-  --color-text: #e2e8f0;
-  --color-text-muted: #94a3b8;
+  --dent-color-primary: #53dea3;
+  --dent-color-primary-hover: #73fbbd;
+  --dent-color-primary-active: #1fb981;
+  --dent-color-primary-container: #1a3a2e;
+  --dent-color-primary-soft: rgb(83 222 163 / 0.14);
+  --dent-color-primary-foreground: #002113;
+  --dent-color-on-primary-container: #e8f5f1;
+
+  --dent-color-background: #0a1612;
+  --dent-color-surface: #0f1f1a;
+  --dent-color-surface-muted: #142621;
+  --dent-color-surface-low: #10201b;
+  --dent-color-surface-container: #1a3a2e;
+  --dent-color-surface-high: #2a4a3e;
+  --dent-color-border: rgb(83 222 163 / 0.15);
+  --dent-color-border-muted: rgb(83 222 163 / 0.12);
+
+  --dent-color-text: #e8f5f1;
+  --dent-color-text-strong: #f4fbf4;
+  --dent-color-text-muted: #9fd2b5;
+  --dent-color-text-subtle: #bbeed0;
+  --dent-color-text-placeholder: #6d7a75;
+
+  --dent-color-danger: #ef4444;
+  --dent-color-danger-soft: rgb(239 68 68 / 0.14);
+  --dent-color-success-soft: rgb(22 163 74 / 0.18);
+  --dent-color-warning-soft: rgb(217 119 6 / 0.18);
+  --dent-color-info-soft: rgb(37 99 235 / 0.18);
 }

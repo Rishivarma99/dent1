@@ -13,10 +13,21 @@ public static class SeedingExtensions
     {
         using var scope = app.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<DentContext>();
-        var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync(cancellationToken);
-        if (pendingMigrations.Any())
+        if (string.Equals(
+            dbContext.Database.ProviderName,
+            "Microsoft.EntityFrameworkCore.SqlServer",
+            StringComparison.Ordinal))
         {
-            await dbContext.Database.MigrateAsync(cancellationToken);
+            // SQL Server uses the current model because the existing migration is PostgreSQL-specific.
+            await dbContext.Database.EnsureCreatedAsync(cancellationToken);
+        }
+        else
+        {
+            var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync(cancellationToken);
+            if (pendingMigrations.Any())
+            {
+                await dbContext.Database.MigrateAsync(cancellationToken);
+            }
         }
 
         var seedService = scope.ServiceProvider.GetRequiredService<IDatabaseSeedService>();
