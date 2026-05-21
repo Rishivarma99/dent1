@@ -48,3 +48,17 @@
   background-color: var(--appt-outline-variant);
   border-radius: 10px;
 }
+
+:host-context(html[data-theme='dark']) {
+  --appt-primary: #53dea3;
+  --appt-primary-container: #1fb981;
+  --appt-on-primary: #111827;
+  --appt-on-surface: #f3f4f6;
+  --appt-on-surface-variant: #9ca3af;
+  --appt-outline: #9ca3af;
+  --appt-outline-variant: #374151;
+  --appt-surface: #1f2937;
+  --appt-surface-container: #374151;
+  --appt-surface-lowest: #111827;
+  --appt-surface-variant: #374151;
+}

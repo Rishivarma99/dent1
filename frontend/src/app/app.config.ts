@@ -58,10 +58,10 @@ const DentovaPreset = definePreset(Aura, {
           activeColor: '{primary.500}'
         },
         highlight: {
-          background: 'rgba(83, 222, 163, 0.14)',
-          focusBackground: 'rgba(83, 222, 163, 0.22)',
-          color: '#e8f5f1',
-          focusColor: '#f4fbf4'
+          background: 'rgba(19, 78, 74, 0.3)',
+          focusBackground: 'rgba(19, 78, 74, 0.45)',
+          color: '#f3f4f6',
+          focusColor: '#f9fafb'
         }
       }
     }
