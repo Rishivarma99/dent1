@@ -1,0 +1,31 @@
+<section class="flex flex-col gap-6 bg-background p-4 text-text sm:p-6 lg:p-8">
+  <header>
+    <h1 class="text-2xl font-bold text-text-strong sm:text-3xl">Settings</h1>
+    <p class="mt-1 text-sm text-text-subtle">Manage your clinic portal preferences</p>
+  </header>
+
+  <article class="max-w-xl rounded-xl border border-border-muted bg-surface p-6 shadow-card">
+    <h2 class="text-lg font-semibold text-text-strong">Appearance</h2>
+    <p class="mt-1 text-sm text-text-subtle">
+      Choose light or dark mode. On small screens, use this setting when the header theme toggle is hidden.
+    </p>
+
+    <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <p class="text-sm font-medium text-text-strong">Theme</p>
+        <p class="text-xs text-text-muted">
+          {{ isDarkMode() ? 'Dark mode is on' : 'Light mode is on' }}
+        </p>
+      </div>
+
+      <button
+        pButton
+        type="button"
+        [icon]="isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'"
+        [label]="isDarkMode() ? 'Switch to light' : 'Switch to dark'"
+        severity="secondary"
+        (click)="onToggleTheme()"
+      ></button>
+    </div>
+  </article>
+</section>

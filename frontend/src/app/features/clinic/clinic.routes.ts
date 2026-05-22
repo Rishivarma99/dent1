@@ -19,6 +19,10 @@ export const CLINIC_ROUTES: Routes = [
         loadChildren: () => import('./patients/routes').then((m) => m.PATIENT_ROUTES)
       },
       {
+        path: 'settings',
+        loadChildren: () => import('./settings/routes').then((m) => m.SETTINGS_ROUTES)
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: 'dashboard'

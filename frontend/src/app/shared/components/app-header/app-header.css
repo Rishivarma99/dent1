@@ -2,3 +2,14 @@
   display: block;
   height: 100%;
 }
+
+/* Expand left from icon; cap width so panel stays on screen (especially <400px) */
+.app-header-search-panel--expanded {
+  width: min(20rem, calc(100vw - 11rem));
+}
+
+@media (min-width: 640px) {
+  .app-header-search-panel--expanded {
+    width: min(20rem, calc(100vw - 14rem));
+  }
+}

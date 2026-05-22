@@ -49,28 +49,28 @@ public sealed class UserSeedService : IUserSeedService
         const string defaultPassword = "Password@123";
         foreach (var seed in users)
         {
-            var user = await _dbContext.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == seed.Id, cancellationToken);
-            if (user is null)
+            var exists = await _dbContext.Users.IgnoreQueryFilters().AnyAsync(u => u.Id == seed.Id, cancellationToken);
+            if (exists)
             {
-                user = new User
-                {
-                    Id = seed.Id,
-                    CreatedAt = seed.CreatedAt
-                };
-                _dbContext.Users.Add(user);
+                continue;
             }
 
-            user.Name = seed.Name;
-            user.Email = seed.Email;
-            user.Username = seed.Username;
-            user.PhoneNumber = seed.PhoneNumber;
-            user.Role = seed.Role;
-            user.RoleId = RoleIds[seed.Role];
-            user.TenantId = seed.TenantId;
-            user.IsActive = seed.IsActive;
-            user.IsDeleted = false;
+            var user = new User
+            {
+                Id = seed.Id,
+                Name = seed.Name,
+                Email = seed.Email,
+                Username = seed.Username,
+                PhoneNumber = seed.PhoneNumber,
+                Role = seed.Role,
+                RoleId = RoleIds[seed.Role],
+                TenantId = seed.TenantId,
+                IsActive = seed.IsActive,
+                IsDeleted = false,
+                CreatedAt = seed.CreatedAt
+            };
             user.PasswordHash = _passwordHasher.HashPassword(user, defaultPassword);
-            user.UpdatedAt = DateTime.UtcNow;
+            _dbContext.Users.Add(user);
         }
 
         await _dbContext.SaveChangesAsync(cancellationToken);

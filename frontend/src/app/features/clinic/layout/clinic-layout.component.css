@@ -11,8 +11,8 @@
   transform: translateX(-100%);
   z-index: var(--z-sidebar);
   transition:
-    transform 180ms ease,
-    width 180ms ease;
+    transform 300ms ease-in-out,
+    width 300ms ease-in-out;
 }
 
 .clinic-layout--sidebar-open .clinic-layout__sidebar {
@@ -26,7 +26,7 @@
   right: 0;
   height: var(--layout-header-height);
   z-index: var(--z-header);
-  transition: left 180ms ease;
+  transition: left 300ms ease-in-out;
 }
 
 .clinic-layout__main {
@@ -38,7 +38,7 @@
     var(--layout-footer-height) + var(--layout-content-padding)
   );
   overflow: auto;
-  transition: margin-left 180ms ease;
+  transition: margin-left 300ms ease-in-out;
 }
 
 .clinic-layout__footer {
@@ -48,13 +48,13 @@
   bottom: 0;
   height: var(--layout-footer-height);
   z-index: var(--z-footer);
-  transition: left 180ms ease;
+  transition: left 300ms ease-in-out;
 }
 
 .clinic-layout__backdrop {
   position: fixed;
   inset: 0;
-  background: rgb(0 0 0 / 0.35);
+  background: rgb(0 0 0 / 0.5);
   border: 0;
   z-index: calc(var(--z-sidebar) - 1);
 }
