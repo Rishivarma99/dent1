@@ -10,6 +10,28 @@
 
 **Design spec:** `docs/superpowers/specs/2026-05-22-clinical-workspace-design.md`
 
+**Branch:** `feature/clinical-workspace`  
+**Worktree (isolated implementation):** `.worktrees/clinical-workspace/` (full path below)
+
+---
+
+## Phase 0 — Git worktree (DONE)
+
+### Task 0: Isolated worktree (`using-git-worktrees`)
+
+- [x] **Step 1:** Added `.worktrees/` and `worktrees/` to root `.gitignore` (commit on `dev-rishi` when ready).
+- [x] **Step 2:** `git worktree add .worktrees/clinical-workspace -b feature/clinical-workspace`
+- [x] **Step 3:** `npm install` + `npm run build` in worktree `frontend/` — exit 0 (existing budget warnings only).
+- [x] **Step 4:** Open worktree in Cursor for implementation (or agent edits paths under `.worktrees/clinical-workspace/`).
+- [x] **Step 5:** Run serve from worktree on another port (`ng serve --port 4201`) when testing feature branch.
+
+**Paths:**
+
+| Checkout | Branch | Use for |
+|----------|--------|---------|
+| `dent1/` (main) | `dev-rishi` | Your current `ng serve`, day-to-day |
+| `dent1/.worktrees/clinical-workspace/` | `feature/clinical-workspace` | Clinical workspace implementation |
+
 ---
 
 ## File map
@@ -20,7 +42,6 @@
 | `core/services/clinic-nav-config.service.ts` | Sidebar items + home path per role |
 | `core/guards/clinical-role.guard.ts` | Allow Doctor, Assistant |
 | `core/guards/ops-role.guard.ts` | Allow Admin, Receptionist |
-| `core/guards/admin-role.guard.ts` | Allow Admin only (for `/doctors`) |
 | `features/clinic/workspace/` | Workspace page + presentational widgets |
 | `features/clinic/dashboard/` | Trim/guard ops dashboard |
 | `features/clinic/layout/components/clinic-sidebar-nav/*` | Consume nav config |
@@ -82,15 +103,13 @@ Settings      → /settings
 **Files:**
 - Create: `frontend/src/app/core/guards/clinical-role.guard.ts`
 - Create: `frontend/src/app/core/guards/ops-role.guard.ts`
-- Create: `frontend/src/app/core/guards/admin-role.guard.ts`
-- Modify: `frontend/src/app/features/clinic/clinic.routes.ts`
-- Modify: `frontend/src/app/features/clinic/doctors/routes.ts` (add `canActivate: [adminRoleGuard]`)
+- Modify: `frontend/src/app/features/clinic/clinic.routes.ts` — **remove** lazy `doctors` child route (keep `features/clinic/doctors/` code for Settings reuse later)
 
 - [ ] **Step 1:** Clinical guard allows `Doctor`, `Assistant`; else redirect to `/dashboard`.
 - [ ] **Step 2:** Ops guard allows `Admin`, `Receptionist`; else redirect to `/workspace`.
-- [ ] **Step 3:** Admin guard for `/doctors` only.
-- [ ] **Step 4:** Add lazy `workspace` route with clinical guard.
-- [ ] **Step 5:** Add `appointments` child route stub (empty page “Coming soon”) so nav link is valid.
+- [ ] **Step 3:** Add lazy `workspace` route with clinical guard.
+- [ ] **Step 4:** Add `appointments` child route stub (empty page “Coming soon”) so nav link is valid.
+- [ ] **Step 5:** Remove `/doctors` from `clinic.routes.ts` (not sidebar, not standalone — Settings module will host CRUD later).
 - [ ] **Step 6:** Replace `redirectTo: 'dashboard'` with a small redirect component or guard that reads role and navigates to default landing.
 
 ---
@@ -164,7 +183,7 @@ Settings      → /settings
 - Modify: `dashboard/routes.ts`
 
 - [ ] **Step 1:** Apply `opsRoleGuard` on dashboard route.
-- [ ] **Step 2:** Remove “Manage Doctors” button from dashboard (doctors not in workflow).
+- [ ] **Step 2:** Remove “Manage Doctors” button from dashboard (doctor CRUD deferred to Settings module).
 - [ ] **Step 3:** Keep clinic-wide metrics and full queue for receptionist/admin.
 - [ ] **Step 4:** Optional: add prominent link/card “Open clinical workspace” hidden for ops roles (skip if YAGNI).
 
@@ -184,25 +203,47 @@ Settings      → /settings
 
 ### Task 11: Verification (superpowers:verification-before-completion)
 
-- [ ] **Step 1:** `npm run build` in `frontend/` — exit 0.
+- [x] **Step 1:** `npm run build` in `frontend/` — exit 0 (worktree).
+- [x] **Step 1b:** `dotnet build` in `api/` — exit 0 (worktree).
 - [ ] **Step 2:** Manual matrix:
 
-| User | Landing | Sidebar | `/doctors` direct URL |
-|------|---------|---------|------------------------|
-| Doctor | `/workspace` | No Dashboard, no Doctors | Blocked or redirect |
-| Assistant | `/workspace` | Same | Blocked |
-| Receptionist | `/dashboard` | No Workspace | Blocked |
-| Admin | `/dashboard` | No Workspace | Allowed |
+| User | Landing | Sidebar |
+|------|---------|---------|
+| Doctor | `/workspace` | My Workspace, Patients, Appointments, Settings — no Dashboard |
+| Assistant | `/workspace` | Same |
+| Receptionist | `/dashboard` | Dashboard, Patients, Appointments, Settings — no Workspace |
+| Admin | `/dashboard` | Same as receptionist |
 
-- [ ] **Step 3:** Resize mobile / tablet / desktop — workspace queue readable, CTA tappable.
+- [ ] **Step 3:** Confirm `/doctors` is not registered (404 or app redirect) until Settings ships.
+- [ ] **Step 4:** Resize mobile / tablet / desktop — workspace queue readable, CTA tappable.
 
 ---
 
-## Phase 5 — Backend follow-up (separate plan, not MVP)
+## Phase 5 — Settings module (DONE)
 
-- [ ] Workspace aggregate endpoint: `GET /api/workspace/today?doctorId=` (queue, stats, follow-ups)
-- [ ] JWT claims: `doctorId`, permission codes array
-- [ ] Filter appointments by `DoctorId` + branch
+- [x] Settings shell with sections (profile, clinic, **staff/doctors**, etc.)
+- [x] Embed or lazy-load existing `doctors-page` under Settings (admin-only tab)
+- [x] Redirect legacy `/doctors` → `/settings/staff` for bookmarks
+- [x] `GET/POST/PUT/DELETE /api/doctors` — staff list backed by `User` rows with `Role=Doctor`
+
+---
+
+## Phase 6 — Workspace API + permissions (DONE on `feature/clinical-workspace`)
+
+- [x] `GET /api/workspace/today` — queue, stats, follow-ups (seed data scoped by `UserId` until appointments exist)
+- [x] JWT `doctor_id` claim for Doctor/Assistant; login response includes `permissions[]`
+- [x] Frontend `WorkspaceApiService` calls API; `ClinicPermissionsService` uses stored permissions
+- [ ] Filter appointments by `DoctorId` + branch (requires appointment schema + migration — separate)
+
+---
+
+## Next step — merge & verify (Task 11)
+
+1. Run API from worktree: `dotnet run --project api/Dent1.Api`
+2. Manual matrix (doctor/assistant/receptionist/admin) — see Task 11 table below (**you**)
+3. **Re-login** after pull so `permissions[]` is stored (old sessions lack it)
+4. [ ] Merge `feature/clinical-workspace` → `dev-rishi` (commit on feature branch, then merge or PR)
+5. [ ] Remove worktree when done: `git worktree remove .worktrees/clinical-workspace`
 
 ---
 
@@ -227,3 +268,4 @@ Settings      → /settings
 | Role string mismatch | Align with `UserRole` enum names from API |
 | Dashboard duplication | Extract widgets in Task 6; don’t copy-paste twice long-term |
 | Assistant over-blocked | Permission service easy to extend per clinic later |
+| Doctor CRUD orphaned | Keep `features/clinic/doctors/`; wire only via Settings follow-up |

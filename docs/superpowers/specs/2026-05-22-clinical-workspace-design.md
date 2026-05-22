@@ -25,7 +25,7 @@ These are **not** the same screen. Mixing them confuses doctor UX.
 | Receptionist | `/dashboard` | Dashboard, Patients, Appointments, Settings |
 | Admin | `/dashboard` | Dashboard, Patients, Appointments, Settings |
 
-**Doctors** is removed from sidebar for all roles. Doctor master-data CRUD remains at `/doctors` (admin-only route guard); future home may be Settings → Staff.
+**Doctors** is removed from sidebar for all roles. Doctor master-data CRUD is **not** a top-level clinic route in this phase — it moves under **Settings** when that module is built (e.g. Settings → Staff / Doctors). Existing `features/clinic/doctors/` code can be reused there; do not expose `/doctors` in the clinic shell for MVP.
 
 ---
 
@@ -122,13 +122,14 @@ One workspace UI. Actions shown/hidden by permissions (seeded today; extend late
 
 ```text
 /clinic (layout)
-  /dashboard     → ops overview (guard: Admin, Receptionist; optional read for others)
+  /dashboard     → ops overview (guard: Admin, Receptionist)
   /workspace     → clinical home (guard: Doctor, Assistant)
   /patients      → existing
   /appointments  → stub or existing (add route when ready)
-  /settings      → existing
-  /doctors       → existing CRUD, admin-only, NOT in sidebar
+  /settings      → existing shell; doctor CRUD nested here later
 ```
+
+**Doctors CRUD:** `/doctors` redirects to `/settings/staff` (admin-only). Not in sidebar.
 
 Default child redirect (`''`) must be **role-aware** (not always `dashboard`).
 
@@ -138,6 +139,8 @@ Default child redirect (`''`) must be **role-aware** (not always `dashboard`).
 
 - Separate doctor app or layout fork
 - Assistant-specific workspace module
+- **Settings → Doctors / Staff CRUD** (reuse existing doctors feature; build with settings module)
+- Standalone `/doctors` route in clinic layout
 - Real-time WebSocket queue
 - Multi-branch switcher
 - Configurable permission UI (use seeded role → permission map in code first)
