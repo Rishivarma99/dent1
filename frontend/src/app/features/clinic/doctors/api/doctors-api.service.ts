@@ -28,8 +28,10 @@ export class DoctorsApiService {
       .pipe(map(unwrapApiResponse));
   }
 
-  update(id: string, data: { name: string; specialty: string }): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/${id}`, data);
+  update(id: string, data: { name: string; specialty: string }): Observable<Doctor> {
+    return this.http
+      .put<ApiResponse<Doctor>>(`${this.baseUrl}/${id}`, data)
+      .pipe(map(unwrapApiResponse));
   }
 
   delete(id: string): Observable<void> {

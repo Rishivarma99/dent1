@@ -19,6 +19,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { Menu, MenuModule } from 'primeng/menu';
 import { TooltipModule } from 'primeng/tooltip';
 import { filter, map, startWith } from 'rxjs';
+import { getDefaultLandingPath, isClinicalRole } from '../../../core/constants/clinic-roles';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { TokenStorageService } from '../../../core/services/token-storage.service';
@@ -38,8 +39,11 @@ interface HeaderBreadcrumb {
 
 const MODULE_LABELS: Record<string, string> = {
   dashboard: 'Dashboard',
+  workspace: 'My Workspace',
   patients: 'Patients',
   doctors: 'Doctors',
+  staff: 'Staff & Doctors',
+  general: 'General',
   settings: 'Settings',
   appointments: 'Appointments',
   visits: 'Visit Workspace',
@@ -163,7 +167,8 @@ export class AppHeaderComponent {
 
   private resolvePageContext(url: string): HeaderPageContext {
     const segments = url.split('?')[0].split('/').filter(Boolean);
-    const rootSegment = segments[0] ?? 'dashboard';
+    const landingPath = getDefaultLandingPath(this.tokenStorage.getRole());
+    const rootSegment = segments[0] ?? landingPath.replace(/^\//, '');
 
     const routeTitle = this.readRouteHeaderTitle();
 
@@ -220,10 +225,16 @@ export class AppHeaderComponent {
   private buildBreadcrumbs(url: string): HeaderBreadcrumb[] {
     const paths = url.split('?')[0].split('/').filter(Boolean);
     const routeTitle = this.readRouteHeaderTitle();
-    const breadcrumbs: HeaderBreadcrumb[] = [{ label: 'Dashboard', path: '/dashboard' }];
+    const role = this.tokenStorage.getRole();
+    const breadcrumbs: HeaderBreadcrumb[] = [
+      {
+        label: isClinicalRole(role) ? 'My Workspace' : 'Dashboard',
+        path: getDefaultLandingPath(role)
+      }
+    ];
 
     paths.forEach((segment, index) => {
-      if (segment === 'dashboard') {
+      if (segment === 'dashboard' || segment === 'workspace' || segment === 'general') {
         return;
       }
 

@@ -1,0 +1,26 @@
+<section class="flex flex-col gap-6 bg-background p-4 text-text sm:p-6 lg:p-8">
+  <header>
+    <h1 class="text-2xl font-bold text-text-strong sm:text-3xl">My Workspace</h1>
+    <p class="mt-1 text-sm text-text-subtle">Your patients and visits for today</p>
+  </header>
+
+  <app-workspace-stats [stats]="stats()" />
+
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <div class="lg:col-span-2">
+      <app-today-queue
+        [items]="queueItems()"
+        [canStartVisit]="permissions().canStartVisit"
+        (startVisit)="onStartVisit($event)"
+      />
+    </div>
+
+    <div class="flex flex-col gap-6">
+      <app-pending-follow-ups
+        [items]="followUps()"
+        [canSchedule]="permissions().canScheduleFollowUps"
+        (scheduleFollowUps)="onScheduleFollowUps()"
+      />
+    </div>
+  </div>
+</section>

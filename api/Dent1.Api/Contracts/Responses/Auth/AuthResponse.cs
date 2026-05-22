@@ -7,4 +7,5 @@ public sealed class AuthResponse
     public Guid UserId { get; set; }
     public string Role { get; set; } = string.Empty;
     public DateTime AccessTokenExpiresAtUtc { get; set; }
+    public IReadOnlyList<string> Permissions { get; set; } = Array.Empty<string>();
 }

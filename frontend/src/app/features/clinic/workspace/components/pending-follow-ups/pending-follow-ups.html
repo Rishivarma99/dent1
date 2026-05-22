@@ -1,0 +1,43 @@
+<article class="rounded-xl border border-border-muted bg-surface shadow-card">
+  <div class="flex items-center justify-between border-b border-border-muted p-6">
+    <div>
+      <h2 class="text-lg font-bold text-text-strong">Pending Follow-ups</h2>
+      <p class="mt-0.5 text-sm text-text-subtle">Requires scheduling</p>
+    </div>
+    <span class="rounded-full bg-danger-soft px-3 py-1 text-xs font-bold text-danger">
+      {{ items().length }}
+    </span>
+  </div>
+
+  <div class="max-h-96 divide-y divide-border-muted overflow-y-auto">
+    @for (item of items(); track item.id) {
+      <div class="p-4 transition-colors hover:bg-surface-low">
+        <div class="flex items-start gap-3">
+          <div [class]="followUpIconClass(item.type)">
+            <i [class]="followUpIcon(item.type) + ' text-xl'" aria-hidden="true"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="truncate font-semibold text-text-strong">{{ item.name }}</p>
+            <p class="text-sm text-text-subtle">{{ item.reason }}</p>
+            <div class="mt-1 flex items-center gap-2">
+              <span [class]="followUpBadgeClass(item.type)">{{ item.type }}</span>
+              <span class="text-xs text-text-subtle">{{ item.days }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (canSchedule()) {
+    <div class="border-t border-border-muted p-4">
+      <button
+        pButton
+        type="button"
+        label="Schedule Follow-ups"
+        class="w-full justify-center"
+        (click)="onScheduleFollowUps()"
+      ></button>
+    </div>
+  }
+</article>

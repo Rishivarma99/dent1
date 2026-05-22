@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthApiService } from '../../api/auth-api.service';
 import { mapAuthResponseDtoToStoredSession } from '../../mappers/auth.mapper';
+import { getDefaultLandingPath } from '../../../../core/constants/clinic-roles';
 import { TokenStorageService } from '../../../../core/services/token-storage.service';
 import { toUserFacingError } from '../../../../shared/utils/api/to-user-facing-error';
 import {
@@ -191,7 +192,7 @@ export class LoginPage implements AfterViewInit, OnDestroy {
       );
       this.tokenStorage.saveSession(mapAuthResponseDtoToStoredSession(response));
       this.statusMessage.set('Signed in successfully. Redirecting...');
-      await this.router.navigate(['/patients']);
+      await this.router.navigateByUrl(getDefaultLandingPath(this.tokenStorage.getRole()));
     } catch (error) {
       console.error('Credentials sign-in failed:', error);
       this.statusMessage.set(toUserFacingError(error));
@@ -232,7 +233,7 @@ export class LoginPage implements AfterViewInit, OnDestroy {
     const provider = new GoogleAuthProvider();
     signInWithPopup(this.auth, provider)
       .then(() => {
-        void this.router.navigate(['/patients']);
+        void this.router.navigateByUrl(getDefaultLandingPath(this.tokenStorage.getRole()));
       })
       .catch((err) => {
         console.error('Google sign-in failed:', err);
@@ -290,7 +291,7 @@ export class LoginPage implements AfterViewInit, OnDestroy {
       await this.confirmationResult.confirm(otp);
       this.confirmationResult = null;
       this.statusMessage.set('OTP verified successfully. Redirecting...');
-      void this.router.navigate(['/patients']);
+      void this.router.navigateByUrl(getDefaultLandingPath(this.tokenStorage.getRole()));
     } catch (error) {
       console.error('OTP verification failed:', error);
       this.phoneForm.controls.otp.reset();

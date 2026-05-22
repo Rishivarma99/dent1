@@ -66,6 +66,7 @@ public class AuthController : ControllerBase
             RefreshToken = result.RefreshToken,
             UserId = result.UserId,
             Role = result.Role,
-            AccessTokenExpiresAtUtc = result.AccessTokenExpiresAtUtc
+            AccessTokenExpiresAtUtc = result.AccessTokenExpiresAtUtc,
+            Permissions = result.Permissions
         };
 }

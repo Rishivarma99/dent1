@@ -201,10 +201,6 @@ export class DashboardPage {
 
   protected readonly createAppointmentDrawerOpen = signal(false);
 
-  protected goToDoctors(): void {
-    void this.router.navigate(['/doctors']);
-  }
-
   protected queueStatusIcon(status: QueueStatus): string {
     switch (status) {
       case 'completed':

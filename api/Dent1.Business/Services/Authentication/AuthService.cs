@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using Dent1.Business.Abstractions;
 using Dent1.Data.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -19,19 +20,22 @@ public class AuthService : IAuthService
     private readonly IJwtTokenService _jwtTokenService;
     private readonly IConfiguration _configuration;
     private readonly IPasswordService _passwordService;
+    private readonly IPermissionResolver _permissionResolver;
 
     public AuthService(
         IUserRepository userRepository,
         IUnitOfWork unitOfWork,
         IJwtTokenService jwtTokenService,
         IConfiguration configuration,
-        IPasswordService passwordService)
+        IPasswordService passwordService,
+        IPermissionResolver permissionResolver)
     {
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
         _jwtTokenService = jwtTokenService;
         _configuration = configuration;
         _passwordService = passwordService;
+        _permissionResolver = permissionResolver;
     }
 
     public async Task<AuthResult?> LoginAsync(SignInRequest request, CancellationToken cancellationToken)
@@ -64,12 +68,15 @@ public class AuthService : IAuthService
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+        var permissions = await _permissionResolver.ResolveAsync(user.Id, user.TenantId, cancellationToken);
+
         return new AuthResult(
             AccessToken: accessToken,
             RefreshToken: refreshToken,
             UserId: user.Id,
             Role: user.Role.ToString(),
-            AccessTokenExpiresAtUtc: DateTime.UtcNow.AddMinutes(_jwtTokenService.GetAccessTokenLifetimeMinutes()));
+            AccessTokenExpiresAtUtc: DateTime.UtcNow.AddMinutes(_jwtTokenService.GetAccessTokenLifetimeMinutes()),
+            Permissions: permissions.ToArray());
     }
 
     public async Task<AuthResult?> RefreshAsync(RefreshSessionRequest request, CancellationToken cancellationToken)
@@ -91,12 +98,15 @@ public class AuthService : IAuthService
         var accessToken = await _jwtTokenService.GenerateAccessTokenAsync(user, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+        var permissions = await _permissionResolver.ResolveAsync(user.Id, user.TenantId, cancellationToken);
+
         return new AuthResult(
             AccessToken: accessToken,
             RefreshToken: newRefreshToken,
             UserId: user.Id,
             Role: user.Role.ToString(),
-            AccessTokenExpiresAtUtc: DateTime.UtcNow.AddMinutes(_jwtTokenService.GetAccessTokenLifetimeMinutes()));
+            AccessTokenExpiresAtUtc: DateTime.UtcNow.AddMinutes(_jwtTokenService.GetAccessTokenLifetimeMinutes()),
+            Permissions: permissions.ToArray());
     }
 
     private static string GenerateRefreshToken()
@@ -126,4 +136,5 @@ public sealed record AuthResult(
     string RefreshToken,
     Guid UserId,
     string Role,
-    DateTime AccessTokenExpiresAtUtc);
+    DateTime AccessTokenExpiresAtUtc,
+    IReadOnlyList<string> Permissions);

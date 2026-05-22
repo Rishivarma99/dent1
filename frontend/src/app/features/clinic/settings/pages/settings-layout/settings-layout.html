@@ -1,0 +1,28 @@
+<section class="flex flex-col gap-6 bg-background p-4 text-text sm:p-6 lg:p-8">
+  <header>
+    <h1 class="text-2xl font-bold text-text-strong sm:text-3xl">Settings</h1>
+    <p class="mt-1 text-sm text-text-subtle">Manage your clinic portal preferences</p>
+  </header>
+
+  <nav class="flex flex-wrap gap-2 border-b border-border-muted pb-2" aria-label="Settings sections">
+    <a
+      class="settings-layout__nav-link"
+      routerLink="general"
+      routerLinkActive="settings-layout__nav-link--active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      General
+    </a>
+    @if (showStaffNav()) {
+      <a
+        class="settings-layout__nav-link"
+        routerLink="staff"
+        routerLinkActive="settings-layout__nav-link--active"
+      >
+        Staff &amp; Doctors
+      </a>
+    }
+  </nav>
+
+  <router-outlet />
+</section>

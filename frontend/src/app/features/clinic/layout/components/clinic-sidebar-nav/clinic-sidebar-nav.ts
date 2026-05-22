@@ -5,21 +5,16 @@ import {
   EventEmitter,
   Input,
   Output,
+  computed,
   inject
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
 import { map } from 'rxjs';
-import { ClinicSidebarIconId } from './clinic-sidebar-icons';
+import { ClinicNavConfigService } from '../../../../../core/services/clinic-nav-config.service';
+import { TokenStorageService } from '../../../../../core/services/token-storage.service';
 import { ClinicSidebarNavIcon } from './clinic-sidebar-nav-icon';
-
-interface SidebarMenuItem {
-  readonly label: string;
-  readonly icon: ClinicSidebarIconId;
-  readonly routerLink: string;
-  readonly exact?: boolean;
-}
 
 @Component({
   selector: 'app-sidebar',
@@ -33,11 +28,23 @@ interface SidebarMenuItem {
 })
 export class ClinicSidebarNav {
   private readonly breakpointObserver = inject(BreakpointObserver);
+  private readonly tokenStorage = inject(TokenStorageService);
+  private readonly navConfig = inject(ClinicNavConfigService);
 
   @Input() isOpen = false;
 
   @Output() readonly toggleSidebar = new EventEmitter<void>();
   @Output() readonly closeSidebar = new EventEmitter<void>();
+
+  private readonly role = computed(() => this.tokenStorage.getRole());
+
+  protected readonly homeLink = computed(() =>
+    this.navConfig.getDefaultLandingPath(this.role())
+  );
+
+  protected readonly menuItems = computed(() =>
+    this.navConfig.getSidebarItems(this.role())
+  );
 
   /** Tooltips only on tablet icon-only rail (640px–1023px, collapsed). */
   protected readonly isTabletRail = toSignal(
@@ -46,13 +53,6 @@ export class ClinicSidebarNav {
       .pipe(map(state => state.matches)),
     { initialValue: false }
   );
-
-  protected readonly menuItems: readonly SidebarMenuItem[] = [
-    { label: 'Dashboard', icon: 'dashboard', routerLink: '/dashboard', exact: true },
-    { label: 'Patients', icon: 'patients', routerLink: '/patients' },
-    { label: 'Doctors', icon: 'doctors', routerLink: '/doctors' },
-    { label: 'Settings', icon: 'settings', routerLink: '/settings' }
-  ];
 
   protected onToggle(): void {
     this.toggleSidebar.emit();

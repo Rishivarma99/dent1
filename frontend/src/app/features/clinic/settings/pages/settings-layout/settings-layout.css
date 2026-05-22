@@ -1,0 +1,22 @@
+.settings-layout__nav-link {
+  display: inline-flex;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-subtle);
+  text-decoration: none;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.settings-layout__nav-link:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.settings-layout__nav-link--active {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-hover);
+}

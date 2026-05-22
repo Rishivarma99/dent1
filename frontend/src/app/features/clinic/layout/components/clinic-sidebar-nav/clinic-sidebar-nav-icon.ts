@@ -37,6 +37,28 @@ import {
           </defs>
         </svg>
       }
+      @case ('workspace') {
+        <svg class="clinic-sidebar-nav-icon__svg" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path
+            [attr.d]="paths.workspace"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.66667"
+          />
+        </svg>
+      }
+      @case ('appointments') {
+        <svg class="clinic-sidebar-nav-icon__svg" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path
+            [attr.d]="paths.appointments"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.66667"
+          />
+        </svg>
+      }
       @case ('settings') {
         <svg class="clinic-sidebar-nav-icon__svg" viewBox="0 0 20 20" fill="none" aria-hidden="true">
           <path
@@ -54,9 +76,6 @@ import {
             stroke-width="1.66667"
           />
         </svg>
-      }
-      @case ('doctors') {
-        <i class="pi pi-user-md clinic-sidebar-nav-icon__prime" aria-hidden="true"></i>
       }
     }
   `,

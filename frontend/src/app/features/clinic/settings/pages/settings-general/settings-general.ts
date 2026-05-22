@@ -3,13 +3,12 @@ import { ButtonModule } from 'primeng/button';
 import { ThemeService } from '../../../../../core/services/theme.service';
 
 @Component({
-  selector: 'app-settings-page',
+  selector: 'app-settings-general',
   imports: [ButtonModule],
-  templateUrl: './settings-page.html',
-  styleUrl: './settings-page.css',
+  templateUrl: './settings-general.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SettingsPage {
+export class SettingsGeneralPage {
   protected readonly themeService = inject(ThemeService);
 
   protected readonly isDarkMode = computed(() => this.themeService.theme() === 'dark');
