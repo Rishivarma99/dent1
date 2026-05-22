@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Dent1.Business.Abstractions;
 using Dent1.Data.Entities;
+using Dent1.Data.Enums;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -54,6 +55,12 @@ public class JwtTokenService : IJwtTokenService
         foreach (var permission in permissions)
         {
             claims.Add(new Claim("permission", permission));
+        }
+
+        // Until Doctor master records exist, clinical staff id matches user id.
+        if (user.Role is UserRole.Doctor or UserRole.Assistant)
+        {
+            claims.Add(new Claim("doctor_id", user.Id.ToString()));
         }
 
         var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));

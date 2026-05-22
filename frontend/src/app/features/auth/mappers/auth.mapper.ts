@@ -7,6 +7,7 @@ export function mapAuthResponseDtoToStoredSession(dto: AuthResponseDto): StoredA
     refreshToken: dto.refreshToken,
     userId: dto.userId,
     role: dto.role,
-    accessTokenExpiresAtUtc: dto.accessTokenExpiresAtUtc
+    accessTokenExpiresAtUtc: dto.accessTokenExpiresAtUtc,
+    permissions: dto.permissions ?? []
   };
 }

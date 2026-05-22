@@ -23,3 +23,7 @@ docker/.env.*.local
 
 # MCP config may contain API keys
 .cursor/mcp.json
+
+# Superpowers / local git worktrees (isolated feature branches)
+.worktrees/
+worktrees/

@@ -4,4 +4,5 @@ export interface AuthResponseDto {
   userId: string;
   role: string;
   accessTokenExpiresAtUtc: string;
+  permissions: string[];
 }

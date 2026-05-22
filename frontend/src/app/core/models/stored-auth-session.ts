@@ -4,4 +4,5 @@ export interface StoredAuthSession {
   userId: string;
   role: string;
   accessTokenExpiresAtUtc: string;
+  permissions: readonly string[];
 }

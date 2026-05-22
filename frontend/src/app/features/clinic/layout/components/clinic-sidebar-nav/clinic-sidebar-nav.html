@@ -1,6 +1,6 @@
 <aside class="clinic-sidebar">
   <header class="clinic-sidebar__brand">
-    <a class="clinic-sidebar__brand-link" routerLink="/dashboard" aria-label="Dentova home">
+    <a class="clinic-sidebar__brand-link" [routerLink]="homeLink()" aria-label="Dentova home">
       <span class="clinic-sidebar__brand-title">Dentova</span>
       <span class="clinic-sidebar__brand-subtitle">Clinical Precision</span>
     </a>
@@ -26,7 +26,7 @@
 
   <nav class="clinic-sidebar__nav" aria-label="Primary">
     <ul class="clinic-sidebar__nav-list">
-      @for (item of menuItems; track item.routerLink) {
+      @for (item of menuItems(); track item.routerLink) {
         <li>
           <a
             class="clinic-sidebar__nav-item"

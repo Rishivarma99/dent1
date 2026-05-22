@@ -1,0 +1,17 @@
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+  @for (card of stats().cards; track card.label) {
+    <article
+      class="rounded-xl border border-border-muted bg-surface p-6 shadow-card transition-shadow hover:shadow-card-hover"
+    >
+      <div
+        class="flex size-12 items-center justify-center rounded-lg"
+        [class]="iconToneClass(card.tone)"
+      >
+        <i [class]="card.icon + ' text-2xl'" aria-hidden="true"></i>
+      </div>
+      <p class="mt-4 text-sm text-text-subtle">{{ card.label }}</p>
+      <p class="mt-1 text-3xl font-bold text-text-strong">{{ card.value }}</p>
+      <p class="mt-2 text-xs text-text-placeholder">{{ card.hint }}</p>
+    </article>
+  }
+</div>

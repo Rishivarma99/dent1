@@ -1,0 +1,44 @@
+<article class="rounded-xl border border-border-muted bg-surface shadow-card">
+  <div class="flex items-center justify-between border-b border-border-muted p-6">
+    <div>
+      <h2 class="text-lg font-bold text-text-strong">Today's Queue</h2>
+      <p class="mt-0.5 text-sm text-text-subtle">Your patients for today</p>
+    </div>
+    <span class="rounded-full bg-primary-soft px-3 py-1 text-xs font-bold text-primary">
+      {{ items().length }} PATIENTS
+    </span>
+  </div>
+
+  <div class="divide-y divide-border-muted">
+    @for (item of items(); track item.id) {
+      <div class="p-4 transition-colors hover:bg-surface-low">
+        <div class="flex items-center justify-between gap-4">
+          <div class="flex min-w-0 flex-1 items-center gap-4">
+            <div [class]="queueStatusIconClass(item.status)">
+              <i [class]="queueStatusIcon(item.status) + ' text-xl'" aria-hidden="true"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="truncate font-semibold text-text-strong">{{ item.name }}</p>
+              <p class="text-sm text-text-subtle">{{ item.service }}</p>
+            </div>
+            <div class="shrink-0 text-right">
+              <p class="text-sm font-medium text-text-strong">{{ item.time }}</p>
+              <span [class]="queueStatusBadgeClass(item.status)">
+                {{ queueStatusLabel(item.status) }}
+              </span>
+            </div>
+          </div>
+          @if (item.status === 'arrived' && canStartVisit()) {
+            <button
+              pButton
+              type="button"
+              label="Start Visit"
+              class="shrink-0 whitespace-nowrap"
+              (click)="onStartVisit(item.appointmentId)"
+            ></button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</article>

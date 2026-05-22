@@ -2,7 +2,7 @@
   <header>
     <h1 class="text-2xl font-bold text-text-strong sm:text-3xl">Dashboard</h1>
     <p class="mt-1 text-sm text-text-subtle">
-      Overview of today's activities and pending tasks
+      Clinic-wide overview of today's flow, queue, and pending tasks
     </p>
   </header>
 
@@ -13,14 +13,6 @@
       icon="pi pi-calendar-plus"
       label="Create Appointment (Preview)"
       (click)="openCreateAppointmentDrawer()"
-    ></button>
-
-    <button
-      pButton
-      type="button"
-      icon="pi pi-user-md"
-      label="Manage Doctors"
-      (click)="goToDoctors()"
     ></button>
   </div>
 
@@ -68,7 +60,7 @@
         <div class="flex items-center justify-between border-b border-border-muted p-6">
           <div>
             <h2 class="text-lg font-bold text-text-strong">Today's Queue</h2>
-            <p class="mt-0.5 text-sm text-text-subtle">Real-time patient queue status</p>
+            <p class="mt-0.5 text-sm text-text-subtle">Clinic-wide patient queue status</p>
           </div>
           <span class="rounded-full bg-primary-soft px-3 py-1 text-xs font-bold text-primary">
             {{ queueItems.length }} PATIENTS
