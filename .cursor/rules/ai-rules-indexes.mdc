@@ -1,0 +1,17 @@
+---
+description: Consult shared ai-rules indexes for frontend and backend work in dent1
+alwaysApply: true
+---
+
+# Shared AI Rules (mandatory)
+
+For work in `dent1`, use the shared rule indexes in `ai-rules` as the starting point before making substantial changes.
+
+- For Angular or frontend work, read `C:\Users\rishi.alluri\OneDrive - McKissock LP\Documents\Projects\ai-rules\frontend\00-index\frontend-rules-index.md` first.
+- For API or backend work, read `C:\Users\rishi.alluri\OneDrive - McKissock LP\Documents\Projects\ai-rules\backend\index.md` first.
+- If a task touches both frontend and backend, consult both indexes before implementing.
+- Use each index to choose only the specific rule files relevant to the current task instead of reading every rule file.
+- Treat the linked shared rules as the default guidance for architecture, placement, naming, auth, DTOs, API contracts, testing, and similar area-specific decisions.
+- When frontend rules use placeholder names, replace them with the actual `dent1` naming and business-area names used in this repository.
+- If a `dent1`-specific rule in `.cursor/rules/` conflicts with a shared `ai-rules` document, follow the `dent1`-specific rule.
+- User instructions in the current chat override both.

@@ -19,9 +19,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { Menu, MenuModule } from 'primeng/menu';
 import { TooltipModule } from 'primeng/tooltip';
 import { filter, map, startWith } from 'rxjs';
-import { AuthSessionService } from '../../../core/services/auth-session.service';
+import { AuthService } from '../../../core/auth/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
-import { TokenStorageService } from '../../../core/services/token-storage.service';
 
 type HeaderNavMode = 'hamburger' | 'back';
 
@@ -66,8 +65,7 @@ export class AppHeaderComponent {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly location = inject(Location);
-  private readonly authSession = inject(AuthSessionService);
-  private readonly tokenStorage = inject(TokenStorageService);
+  private readonly auth = inject(AuthService);
   protected readonly themeService = inject(ThemeService);
 
   private readonly profileMenuRef = viewChild<Menu>('profileMenu');
@@ -88,9 +86,11 @@ export class AppHeaderComponent {
 
   protected readonly breadcrumbs = computed(() => this.buildBreadcrumbs(this.currentUrl()));
 
-  protected readonly userName = computed(() => this.formatRole(this.tokenStorage.getRole()));
-  protected readonly userTitle = computed(() => this.tokenStorage.getRole() ?? 'Staff');
-  protected readonly userEmail = 'user@dentova.com';
+  protected readonly userName = computed(() => this.auth.currentUser()?.name ?? 'User');
+  protected readonly userTitle = computed(() =>
+    this.formatRole(this.auth.currentUser()?.roles[0] ?? 'Staff')
+  );
+  protected readonly userEmail = computed(() => this.auth.currentUser()?.email ?? 'user@dentova.com');
   protected readonly clinicName = 'Sunrise Dental Clinic';
   protected readonly avatarUrl = 'https://i.pravatar.cc/72?img=12';
 
@@ -120,7 +120,7 @@ export class AppHeaderComponent {
       styleClass: 'app-header-profile-menu-logout',
       command: () => {
         void this.profileMenuRef()?.hide();
-        this.authSession.logout();
+        this.auth.logout().subscribe();
       }
     }
   ]);

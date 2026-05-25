@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \".cursor/hooks/confirm-sensitive-commit.ps1\"",
+        "matcher": "^\\s*git(?:\\.exe)?\\s+commit(?:\\s|$)",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ]
+  }
+}

@@ -1,5 +1,6 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using System.Text;
+using Dent1.Data.Entities;
 using Dent1.Data.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -8,8 +9,10 @@ namespace Dent1.Business.Security;
 
 public interface IAuthService
 {
-    Task<AuthResult?> LoginAsync(SignInRequest request, CancellationToken cancellationToken);
-    Task<AuthResult?> RefreshAsync(RefreshSessionRequest request, CancellationToken cancellationToken);
+    Task<AuthSessionResult?> LoginAsync(SignInRequest request, CancellationToken cancellationToken);
+    Task<TokenPairResult?> RefreshAsync(RefreshSessionRequest request, CancellationToken cancellationToken);
+    Task<AuthenticatedUserResult?> GetCurrentUserAsync(Guid userId, CancellationToken cancellationToken);
+    Task<bool> LogoutAsync(Guid userId, string refreshToken, CancellationToken cancellationToken);
 }
 
 public class AuthService : IAuthService
@@ -34,7 +37,7 @@ public class AuthService : IAuthService
         _passwordService = passwordService;
     }
 
-    public async Task<AuthResult?> LoginAsync(SignInRequest request, CancellationToken cancellationToken)
+    public async Task<AuthSessionResult?> LoginAsync(SignInRequest request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByUsernameOrPhoneAsync(request.UsernameOrPhone, cancellationToken);
         if (user is null || !user.IsActive)
@@ -64,15 +67,13 @@ public class AuthService : IAuthService
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return new AuthResult(
+        return new AuthSessionResult(
             AccessToken: accessToken,
             RefreshToken: refreshToken,
-            UserId: user.Id,
-            Role: user.Role.ToString(),
-            AccessTokenExpiresAtUtc: DateTime.UtcNow.AddMinutes(_jwtTokenService.GetAccessTokenLifetimeMinutes()));
+            User: MapToAuthenticatedUser(user));
     }
 
-    public async Task<AuthResult?> RefreshAsync(RefreshSessionRequest request, CancellationToken cancellationToken)
+    public async Task<TokenPairResult?> RefreshAsync(RefreshSessionRequest request, CancellationToken cancellationToken)
     {
         var refreshTokenHash = HashToken(request.RefreshToken);
         var user = await _userRepository.GetByRefreshTokenHashAsync(refreshTokenHash, cancellationToken);
@@ -91,12 +92,52 @@ public class AuthService : IAuthService
         var accessToken = await _jwtTokenService.GenerateAccessTokenAsync(user, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return new AuthResult(
+        return new TokenPairResult(
             AccessToken: accessToken,
-            RefreshToken: newRefreshToken,
-            UserId: user.Id,
-            Role: user.Role.ToString(),
-            AccessTokenExpiresAtUtc: DateTime.UtcNow.AddMinutes(_jwtTokenService.GetAccessTokenLifetimeMinutes()));
+            RefreshToken: newRefreshToken);
+    }
+
+    public async Task<AuthenticatedUserResult?> GetCurrentUserAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        if (userId == Guid.Empty)
+        {
+            return null;
+        }
+
+        var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
+        if (user is null || !user.IsActive)
+        {
+            return null;
+        }
+
+        return MapToAuthenticatedUser(user);
+    }
+
+    public async Task<bool> LogoutAsync(Guid userId, string refreshToken, CancellationToken cancellationToken)
+    {
+        if (userId == Guid.Empty || string.IsNullOrWhiteSpace(refreshToken))
+        {
+            return false;
+        }
+
+        var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
+        if (user is null || !user.IsActive || string.IsNullOrWhiteSpace(user.RefreshTokenHash))
+        {
+            return false;
+        }
+
+        if (!string.Equals(user.RefreshTokenHash, HashToken(refreshToken), StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        user.RefreshTokenHash = null;
+        user.RefreshTokenCreatedAt = null;
+        user.RefreshTokenExpiresAt = null;
+        user.UpdatedAt = DateTime.UtcNow;
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        return true;
     }
 
     private static string GenerateRefreshToken()
@@ -117,13 +158,26 @@ public class AuthService : IAuthService
         var configured = _configuration["Jwt:RefreshTokenLifetimeDays"];
         return int.TryParse(configured, out var days) ? days : 7;
     }
+
+    private static AuthenticatedUserResult MapToAuthenticatedUser(User user) =>
+        new(
+            user.Id,
+            user.Name,
+            user.Email,
+            [user.Role.ToString()]);
 }
 
 public sealed record SignInRequest(string UsernameOrPhone, string Password);
 public sealed record RefreshSessionRequest(string RefreshToken);
-public sealed record AuthResult(
+public sealed record AuthenticatedUserResult(
+    Guid Id,
+    string Name,
+    string Email,
+    IReadOnlyList<string> Roles);
+public sealed record AuthSessionResult(
     string AccessToken,
     string RefreshToken,
-    Guid UserId,
-    string Role,
-    DateTime AccessTokenExpiresAtUtc);
+    AuthenticatedUserResult User);
+public sealed record TokenPairResult(
+    string AccessToken,
+    string RefreshToken);

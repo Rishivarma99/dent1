@@ -17,6 +17,7 @@
 *.log
 
 # Local secrets (per-developer / per-env overrides)
+.env.local
 docker/.env.newrelic
 docker/.env.*.local
 *.env.local

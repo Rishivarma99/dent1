@@ -1,0 +1,15 @@
+---
+alwaysApply: false
+---
+# Commit Message Workflow (mandatory)
+
+Before creating any `git commit` in this repository:
+
+- Use the project skill `/commit-message-wrapper`.
+- Read and apply `.cursor/skills/commit-message-wrapper/SKILL.md`.
+- Draft the message using the skill's required template before running
+  `git commit`.
+- Pass the commit message using the skill's HEREDOC wrapper.
+- Do not use an inline one-line commit message for repository commits.
+- If the wrapper or template cannot be followed, stop and ask the user before
+  committing.
