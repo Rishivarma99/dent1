@@ -1,0 +1,10 @@
+{
+  "name": "devlog-toolkit",
+  "displayName": "DevLog Toolkit",
+  "description": "Read-only code review agent and helpers for Dent1 frontend/backend conventions",
+  "version": "0.1.0",
+  "skills": "./skills/",
+  "agents": "./agents/",
+  "commands": "./commands/",
+  "hooks": "./hooks/hooks-cursor.json"
+}
